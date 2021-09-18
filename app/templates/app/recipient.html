@@ -1,0 +1,19 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<a href="{% url 'event' recipient.event_id %}"><- Back</a>
+<h1>Gift Ideas for {{recipient.name}}</h1>
+
+<a href="{% url 'idea_new' recipient.event_id recipient.id %}" class="btn btn-primary">Add Idea</a>
+
+{% for idea in ideas %}
+    <p>
+        <a href="{% url 'idea' recipient.event_id recipient.id idea.id %}"><h5>{{idea.title}}</h5></a>
+        <div>{{idea.description}}</div>
+        {% if idea.creator_id == request.user_id or recipient.event.organizer_id == request.user_id %}
+            <a href="{% url 'idea_edit' recipient.event_id recipient.id idea.id %}">Edit</a>
+        {% endif %}
+    </p>
+{% endfor %}
+
+{% endblock content %}

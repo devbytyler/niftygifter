@@ -1,0 +1,85 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>{% block title %}Gifty{% endblock title %}</title>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/2577bfe5a6.js" crossorigin="anonymous"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        <script src="sweetalert2.all.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+        <link href="{% static 'app/css/main.css' %}" rel="stylesheet">
+        
+    </head>
+
+    <style>
+        body {
+            font-family: Roboto, Sans-Serif;
+        }
+    </style>
+
+    <body class="pb-5">
+        <nav class="navbar navbar-light bg-light mb-4">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'home' %}">
+                    <img class="mb-2" src="https://upload.wikimedia.org/wikipedia/commons/8/84/Gift_Flat_Icon_Vector.svg"/>
+                    Gifty
+                </a>
+                <div>
+                    {% if request.user.is_authenticated %}
+                        {% if request.user.first_name %}
+                            <span class="me-3">Hello, {{request.user.first_name}}</span>
+                        {% endif %}
+                        <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}">Login</a>
+                        <a href="{% url 'register' %}"> Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        {% if messages %}
+            <div class="toast-container position-absolute top-0 start-50 translate-middle-x p-3">
+            {% for message in messages %}
+                <div class="toast align-items-center text-white bg-{{message.tags}} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            {{ message }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <main id="main-content">
+            <div class="container">
+                {% block content %}Base page, override me.{% endblock %}
+            </div>
+        </main>
+
+        {% block modal %}{% endblock modal %}
+
+        {% block app %}{% endblock app %}
+
+        <script defer>
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            var toastList = toastElList.map(function (toastEl) {
+                return new bootstrap.Toast(toastEl, {})
+            });
+            toastList.forEach(toast => toast.show());
+        </script>
+    </body>
+</html>

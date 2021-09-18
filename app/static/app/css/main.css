@@ -1,0 +1,17 @@
+.avatar {
+  width: 43px;
+  height: 43px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.members {
+  gap: 5px;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=main.css.map */

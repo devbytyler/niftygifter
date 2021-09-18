@@ -1,0 +1,11 @@
+$blue: #00f;
+
+body {
+    color: $blue;
+    p {
+        color: $blue;
+        div {
+            color: $blue;
+        }
+    }
+}

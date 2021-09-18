@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:5.7
+    ports:
+      - '3306:3306'
+    environment:
+       MYSQL_DATABASE: 'gifty'
+       MYSQL_USER: 'gifty'
+       MYSQL_PASSWORD: 'uGPXUcX4gRz39HSG'
+       MYSQL_ROOT_PASSWORD: 'uGPXUcX4gRz39HSG'
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  scss:
+    image: larryprice/sass
+    volumes:
+      - ./app/static/app/css:/src

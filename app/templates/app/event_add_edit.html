@@ -1,0 +1,15 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+
+<div>Here is my event add edit page</div>
+
+<form method="post">
+{% csrf_token %}
+
+{{form.as_p}}
+
+<input type="submit" value="save">
+</form>
+
+{% endblock content %}

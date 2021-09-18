@@ -1,0 +1,44 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-end">
+    <a href="{% url 'event_new' %}" class="btn btn-primary">+ Create Event</a>
+</div>
+
+<div class="row gy-4 mb-5">
+    {% for event in request.user.memberships.all %}
+    <div class="col-4">
+        <a href="{% url 'event' event.id %}">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{event.title}}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Exhange: {{event.exchange_date}}</h6>
+                    {% comment %} <a href="{% url 'event_membership' event.id %}">Join</a> {% endcomment %}
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+{% if events %}
+<h3>Other Events</h3>
+<div class="row gy-4">
+    {% for event in events %}
+    <div class="col-3">
+        <a href="{% url 'event' event.id %}">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{event.title}}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{event.exchange_date}}</h6>
+                    {% if request.user.is_authenticated %}<a class="btn btn-primary" href="{% url 'event_membership' event.id %}">Join</a>{% endif %}
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+{% endblock content %}
