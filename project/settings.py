@@ -112,6 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Authentication
 AUTH_USER_MODEL = 'app.User'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
