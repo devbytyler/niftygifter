@@ -1,14 +1,17 @@
 <div class="card recipient">
-  <img src="..." class="card-img-top" alt="...">
+  {% comment %} <img src="..." class="card-img-top" alt="..."> {% endcomment %}
   <div class="card-body">
+    {% include 'components/avatar.html' with user=recipient.user %}
     <h5 class="card-title">{{recipient.name}}</h5>
-  </div>
-  <ul class="list-group list-group-flush">
-    <li class="list-group-item">Ideas</li>
-    <li class="list-group-item">Assigned</li>
-  </ul>
-  <div class="card-body">
-    <a href="#" class="card-link">Card link</a>
-    <a href="#" class="card-link">Another link</a>
+    <div class="d-flex justify-content-between">
+      <span> Ideas:</span>
+      <div>
+        {{recipient.ideas.count}}
+        <i class="bi bi-plus-circle-fill text-secondary"></i>
+      </div>
+    </div>
+    <div class="d-flex justify-content-between">
+      <span> Decider:</span>
+    </div>
   </div>
 </div>

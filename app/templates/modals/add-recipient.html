@@ -1,0 +1,30 @@
+{% extends 'modals/form-modal.html' %}
+
+{% block id %}add-recipient-modal{% endblock id %}
+
+
+{% block action %}
+    {% url 'event_recipients' event.id%}
+{% endblock action %}
+    
+
+{% block title %}
+    Add Recipient
+{% endblock title %}
+    
+
+{% block body %}
+    {{add_recipient_form.as_p}}
+{% endblock body %}
+    
+
+{% block confirm_text %}
+    Add
+{% endblock confirm_text %}
+
+
+{% block bs_event %}
+{% endblock bs_event %}
+    
+    
+    

@@ -14,4 +14,18 @@
   cursor: pointer;
 }
 
+.contributor-row {
+  margin-right: -1rem;
+  padding: 1rem 1rem .5rem 0; 
+}
+
+.contributor-row:last-child {
+  border-bottom: none !important;
+  padding-bottom: 0;
+}
+
+.contributor-row:first-child {
+  padding-top: 0;
+}
+
 /*# sourceMappingURL=main.css.map */

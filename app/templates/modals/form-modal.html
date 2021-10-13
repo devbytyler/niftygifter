@@ -1,0 +1,23 @@
+<div class="modal fade" id="{% block id %}{% endblock id %}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% block action %}/{% endblock action %}" method="POST">  
+                {% csrf_token %}  
+                <div class="modal-header">
+                    <h5 class="modal-title">{% block title %}Title{% endblock title %}</h5>
+                </div>
+                <div class="modal-body">
+                    {% block body %}Modal Body{% endblock body %}
+                </div>
+                <div class="modal-footer">
+                    <button 
+                        type="submit" 
+                        class="btn btn-primary" 
+                    >
+                        {% block confirm_text %}Done{% endblock confirm_text %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

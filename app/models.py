@@ -40,6 +40,11 @@ class Recipient(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     decider = models.ForeignKey(User, related_name="decisions", on_delete=models.SET_NULL, null=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['event', 'user'], name='unique_event_recipient')
+        ]
+
     '''
     How does a recipient get added?
     - Admin can make a member that joined into a recipient.

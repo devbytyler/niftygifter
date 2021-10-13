@@ -1,0 +1,16 @@
+<div class="contributor-row d-flex justify-content-between border-bottom">
+    {% include 'components/avatar.html' %}
+    <div class="flex-fill ms-3">
+        <div class="{% if user == event.organizer %}fw-bold{% endif %}">{{user.get_full_name}}</div>
+        <div class="text-muted">{{user.username}}</div>
+    </div>
+    
+    {% if request.user == event.organizer and user != event.organizer %}
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="delete-contributor" value="{{user.id}}">
+        <button type="submit" class="btn btn-link p-0"><i class="bi bi-x fs-1"></i></button>
+    </form>
+    {% endif %}
+        
+</div>

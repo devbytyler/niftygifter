@@ -79,3 +79,7 @@ class IdeaForm(BaseForm, forms.ModelForm):
     class Meta:
         model = Idea
         fields = ['title', 'description']
+
+class NewRecipientForm(BaseForm, forms.Form):
+    email = forms.EmailField(label='Recipient Email')
+    # is_anonymous = forms.BooleanField(label="Anonymous")

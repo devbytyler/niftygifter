@@ -12,7 +12,9 @@ urlpatterns = [
     path('events/new', views.event_add_edit, name='event_new'),
     path('events/<int:pk>', views.event, name='event'),
     path('events/<int:pk>/edit', views.event_add_edit, name='event_edit'),
-    path('events/<int:pk>/membership', views.event_membership, name='event_membership'),
+    path('events/<int:pk>/membership/', views.event_membership, name='event_membership'),
+    path('events/<int:event_id>/recipients/', views.event_recipients, name='event_recipients'),
+    path('async/events/<int:event_id>/membership/<int:user_id>', views.event_membership_async, name='event_membership_async'),
 
     # Recipients
     path('events/<int:event_id>/recipients/<int:pk>', views.recipient, name='recipient'),
