@@ -25,12 +25,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'qoxtq@x*no0m==w0r0327j5yaq9%uz*4s0412*-gqe&m!)da1k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+IS_PROD = 'IS_PROD' in os.environ
+DEBUG = not IS_PROD
 
 ALLOWED_HOSTS = []
 
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
+
+VUEJS_SRC = 'https://cdn.jsdelivr.net/npm/vue/dist/vue.js' if DEBUG else 'https://cdn.jsdelivr.net/npm/vue'
 
 
 # Application definition
