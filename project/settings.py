@@ -27,6 +27,8 @@ SECRET_KEY = 'qoxtq@x*no0m==w0r0327j5yaq9%uz*4s0412*-gqe&m!)da1k'
 # SECURITY WARNING: don't run with debug turned on in production!
 IS_PROD = 'IS_PROD' in os.environ
 DEBUG = not IS_PROD
+DEBUG = True
+
 
 ALLOWED_HOSTS = []
 
