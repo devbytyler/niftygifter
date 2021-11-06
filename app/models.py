@@ -63,6 +63,22 @@ class Idea(models.Model):
     # selected
     # image
 
+class Chat(models.Model):
+    content = models.CharField(max_length=500)
+    user = models.ForeignKey(User, related_name='chats', on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    group = models.ForeignKey(Recipient, related_name='chats', on_delete=models.CASCADE)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "content": self.content,
+            "created_at": self.created_at,
+            "user": self.user.get_full_name(),
+            "user_id": self.user.id
+        }
+
+
 '''
 
 class Comment(models.Model):

@@ -27,7 +27,7 @@
     </style>
 
     <body class="pb-5">
-        <nav class="navbar navbar-light bg-light mb-4">
+        <nav class="navbar navbar-light bg-light">
             <div class="container">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img class="mb-2" width="50px" src="https://upload.wikimedia.org/wikipedia/commons/8/84/Gift_Flat_Icon_Vector.svg"/>
@@ -63,7 +63,7 @@
         {% endif %}
 
         <main id="main-content">
-            <div class="container">
+            <div class="container mt-4">
                 {% block content %}Base page, override me.{% endblock %}
             </div>
         </main>

@@ -21,7 +21,8 @@ python manage.py migrate
 echo "✅ Done"
 
 
-# python manage.py dbseed
+python manage.py dbseed
+python manage.py runserver
 
 # while true; do
 #     read -p "Seed the database? (y, n) " yn

@@ -1,0 +1,67 @@
+<div id="chat">
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas-header border-bottom bg-light">
+            <h5 id="offcanvasRightLabel">Chat</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column-reverse align-items-start">
+            <div v-for="chat in chats" :key="chat.id" class="chat" :class="{me : chat.user_id === currentUserId}">
+                <small class="text-muted">
+                  <span v-if="chat.user_id !== currentUserId">[[chat.user]] -</span>
+                  <span>[[chat.created_at | date]]</span>
+                </small>
+                <div class="p-2 mb-3 shadow-sm border message">[[chat.content]]</div>
+            </div>
+        </div>
+        <div class="p-3 border-top bg-light">
+            <input type="text" class="form-control" @keyup.enter="send" placeholder="Send a message...">
+        </div>
+    </div>
+</div>
+
+<script>
+var app = new Vue({
+  el: '#chat',
+  delimiters: ['[[', ']]'],
+  filters: {
+    date: function (value) {
+      if (!value) return '';
+      var date = new Date(value);
+      var options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+      return new Intl.DateTimeFormat('en-US', options).format(date);
+    }
+  },
+  data: {
+    message: 'Hello Vue!',
+    polling: null,
+    chats: [],
+    currentUserId: {{request.user.id}}
+  },
+  created() {
+    this.getChats();
+	  this.pollChats();
+  },
+  beforeDestroy () {
+	  clearInterval(this.polling);
+  },
+  methods: {
+    async getChats() {
+      const res = await axios.get(`/async/recipients/{{recipient.id}}/chat`);
+      this.chats = res.data.data;
+    },
+    pollChats() {
+      this.polling = setInterval(() => {
+        this.getChats();
+      }, 5000)
+    },
+    async send(event) {
+      const value = event.target.value.trim();
+      if (value.length) {
+        event.target.value = '';
+        const res = await axios.post(`/async/recipients/{{recipient.id}}/chat`, {content: value})
+        this.chats = [res.data, ...this.chats];
+      }
+    },
+  }
+});
+</script>

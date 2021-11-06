@@ -1,4 +1,6 @@
-from django.http.response import HttpResponse, JsonResponse
+import json
+
+from django.http.response import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.urls.base import reverse
@@ -8,11 +10,7 @@ from django.db import IntegrityError
 
 from app import forms
 
-from app.models import User, Event, Recipient, Idea
-
-# Create your views here.
-
-# Request Method Types
+from app.models import Chat, User, Event, Recipient, Idea
 
 
 def home(request):
@@ -69,22 +67,26 @@ def event(request, pk):
     }
     return render(request, "app/event.html", context)
 
+@login_required
 def event_recipients(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = forms.NewRecipientForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data.get('email')
+            email = form.cleaned_data.get("email")
             try:
                 user = User.objects.get(username=email)
-                Recipient.objects.create(event=event, user=user, name=user.get_full_name())
+                Recipient.objects.create(
+                    event=event, user=user, name=user.get_full_name()
+                )
                 messages.success(request, "😎 Successfully added recipient.")
             except IntegrityError:
                 messages.error(request, "👀 This user has already been added.")
             except User.DoesNotExist:
                 messages.error(request, "😕 A user with this email does not exist.")
-    return redirect('event', event_id)
-        
+    return redirect("event", event_id)
+
+
 @login_required
 def event_add_edit(request, pk=None):
     if pk:
@@ -113,7 +115,6 @@ def event_add_edit(request, pk=None):
     return render(request, "app/event_add_edit.html", context)
 
 
-@login_required
 def event_membership(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if event.members.filter(id=request.user.id).exists():
@@ -144,6 +145,7 @@ def event_membership_async(request, event_id, user_id):
         return HttpResponse(status=200)
 
 
+@login_required
 def recipient(request, event_id, pk):
     recipient = get_object_or_404(Recipient, pk=pk)
     ideas = recipient.ideas.select_related("creator").all()
@@ -151,13 +153,13 @@ def recipient(request, event_id, pk):
     context = {"recipient": recipient, "ideas": ideas}
     return render(request, "app/recipient.html", context)
 
-
+@login_required
 def idea(request, event_id, recipient_id, pk):
     idea = get_object_or_404(Idea, pk=pk)
     context = {"idea": idea}
     return render(request, "app/idea.html", context)
 
-
+@login_required
 def idea_add_edit(request, event_id, recipient_id, pk=None):
     idea = None
 
@@ -189,6 +191,25 @@ def idea_add_edit(request, event_id, recipient_id, pk=None):
         "back": reverse("recipient", args=[event_id, recipient_id]),
     }
     return render(request, "app/idea_add_edit.html", context)
+
+@login_required
+def like_idea(request, idea_id):
+    idea = get_object_or_404(Idea, pk=idea_id)
+    return redirect("idea", idea.recipient.event.id, idea.recipient.id, idea_id)
+
+
+def chat(request, pk):
+    if request.method == "POST":
+        body = json.loads(request.body)
+        print(body)
+        c = Chat.objects.create(
+            user=request.user, group_id=pk, content=body.get("content")
+        )
+        return JsonResponse(c.serialize())
+    if request.method == "GET":
+        chats = Chat.objects.filter(group_id=pk).order_by("-id").select_related("user")
+        return JsonResponse({"data": [c.serialize() for c in chats]})
+    return Http404
 
 
 # flag auto-add recipient when they join the group

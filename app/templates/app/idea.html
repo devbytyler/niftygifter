@@ -4,5 +4,6 @@
 
 <p>{{idea.title}}</p>
 <p>{{idea.description}}</p>
+<a href="{% url 'like_idea' idea.id %}">Like</a>
 
 {% endblock content %}

@@ -18,10 +18,13 @@ urlpatterns = [
 
     # Recipients
     path('events/<int:event_id>/recipients/<int:pk>', views.recipient, name='recipient'),
+    path('async/recipients/<int:pk>/chat', views.chat, name='recipient_chat'),
 
     # Ideas
     path('events/<int:event_id>/recipients/<int:recipient_id>/ideas/new', views.idea_add_edit, name='idea_new'),
     path('events/<int:event_id>/recipients/<int:recipient_id>/ideas/<int:pk>', views.idea, name='idea'),
     path('events/<int:event_id>/recipients/<int:recipient_id>/ideas/<int:pk>/edit', views.idea_add_edit, name='idea_edit'),
+    path('ideas/<int:idea_id>/like', views.like_idea, name='like_idea'),
+
 
 ]
