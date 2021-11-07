@@ -1,13 +1,24 @@
-<div class="card recipient">
+<div class="card recipient position-relative">
   {% comment %} <img src="..." class="card-img-top" alt="..."> {% endcomment %}
   <div class="card-body">
+    <div class="d-flex justify-content-end">
+        {% if request.user == event.organizer %}
+        <div class="dropdown">
+            <a href="#" type="button" id="recipient-menu-{{recipient.id}}" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-three-dots"></i>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="recipient-menu-{{recipient.id}}" >
+              <li><a class="dropdown-item text-danger" href="{% url 'event_recipients_remove' event.id recipient.id %}"><i class="bi bi-trash"></i> Delete Recipient</a></li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
     {% include 'components/avatar.html' with user=recipient.user %}
-    <h5 class="card-title">{{recipient.name}}</h5>
+    <a href="{% url 'recipient' event.id recipient.id %}"><h5 class="card-title">{{recipient.name}}</h5></a>
     <div class="d-flex justify-content-between">
       <span> Ideas:</span>
       <div>
         {{recipient.ideas.count}}
-        <i class="bi bi-plus-circle-fill text-secondary"></i>
       </div>
     </div>
     <div class="d-flex justify-content-between">

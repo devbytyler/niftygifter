@@ -1,4 +1,5 @@
 {% extends 'app/base.html' %}
+{% load gifty_filters %}
 
 {% block content %}
 <div class="recipient">
@@ -12,7 +13,7 @@
         <div class="idea border my-2 p-2 d-flex align-items-center rounded">
             <div class="flex-fill">
                 <a href="{% url 'idea' recipient.event_id recipient.id idea.id %}"><h5>{{idea.title}}</h5></a>
-                <div>{{idea.description}}</div>
+                <div>{{idea.description | urlize | url_target_blank | linebreaks}}</div>
             </div>
             {% if idea.creator_id == request.user_id or recipient.event.organizer_id == request.user_id %}
                 <a href="{% url 'idea_edit' recipient.event_id recipient.id idea.id %}"><i class="bi bi-pencil"></i></a>

@@ -86,6 +86,10 @@ def event_recipients(request, event_id):
                 messages.error(request, "😕 A user with this email does not exist.")
     return redirect("event", event_id)
 
+@login_required
+def remove_event_recipient(request, event_id, recipient_id):
+    get_object_or_404(Recipient, pk=recipient_id).delete()
+    return redirect("event", event_id)
 
 @login_required
 def event_add_edit(request, pk=None):
@@ -114,7 +118,7 @@ def event_add_edit(request, pk=None):
     context = {"form": form}
     return render(request, "app/event_add_edit.html", context)
 
-
+@login_required
 def event_membership(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if event.members.filter(id=request.user.id).exists():

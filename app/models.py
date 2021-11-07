@@ -36,7 +36,7 @@ class Event(models.Model):
 
 class Recipient(models.Model):
     name = models.CharField(max_length=50, blank=True, default="")
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="recipients")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     decider = models.ForeignKey(User, related_name="decisions", on_delete=models.SET_NULL, null=True)
 
