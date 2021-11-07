@@ -48,6 +48,7 @@
   max-width: 80%;
   position: relative;
   border-radius: 10px;
+  overflow-wrap: break-word;
 }
 
 /* .chat.me .message:before {
