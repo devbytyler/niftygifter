@@ -182,6 +182,7 @@ def idea_add_edit(request, event_id, recipient_id, pk=None):
             form = forms.IdeaForm(request.POST)
             if form.is_valid:
                 new_idea = form.save(commit=False)
+                new_idea.creator = request.user
                 new_idea.recipient_id = recipient_id
                 new_idea.save()
                 messages.success(request, "💡 Idea added.")

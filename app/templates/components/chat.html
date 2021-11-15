@@ -14,7 +14,10 @@
             </div>
         </div>
         <div class="p-3 border-top bg-light">
-            <input type="text" class="form-control" @keyup.enter="send" placeholder="Send a message...">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" v-model="message" @keyup.enter="send" placeholder="Send a message..." aria-describedby="send-button-addon">
+            <button class="btn btn-primary" :disabled="!message.length" type="button" id="send-button-addon" @click="send">Send<i class="bi bi-arrow-up"></i></button>
+          </div>
         </div>
     </div>
 </div>
@@ -35,7 +38,8 @@ var app = new Vue({
     message: 'Hello Vue!',
     polling: null,
     chats: [],
-    currentUserId: {{request.user.id}}
+    currentUserId: {{request.user.id}},
+    message: '',
   },
   created() {
     this.getChats();
@@ -55,10 +59,10 @@ var app = new Vue({
       }, 5000)
     },
     async send(event) {
-      const value = event.target.value.trim();
-      if (value.length) {
-        event.target.value = '';
-        const res = await axios.post(`/async/recipients/{{recipient.id}}/chat`, {content: value})
+      var inFlightMessage = this.message.trim()
+      if (inFlightMessage.length) {
+        this.message = '';
+        const res = await axios.post(`/async/recipients/{{recipient.id}}/chat`, {content: inFlightMessage})
         this.chats = [res.data, ...this.chats];
       }
     },

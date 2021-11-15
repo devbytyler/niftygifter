@@ -28,8 +28,8 @@
         }
     </style>
 
-    <body class="pb-5">
-        <nav class="navbar navbar-light bg-light">
+    <body class="pb-5 bg-light">
+        <nav class="navbar navbar-dark bg-dark">
             <div class="container">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img class="mb-2" width="50px" src="https://upload.wikimedia.org/wikipedia/commons/8/84/Gift_Flat_Icon_Vector.svg"/>
@@ -63,6 +63,10 @@
             {% endfor %}
             </div>
         {% endif %}
+
+        
+        {% block page_header %}{% endblock page_header %}
+            
 
         <main id="main-content">
             <div class="container mt-4">
