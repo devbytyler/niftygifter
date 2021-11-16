@@ -2,12 +2,20 @@
 
 {% block content %}
 
-<form method="post" action="{% url 'register' %}">
-{% csrf_token %}
+<div class="card m-auto" style="max-width: 500px;">
+    <div class="card-body">
+        <h4 class="text-center">Register</h4>
+        <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
 
-{{form.as_p}}
+        {{form.as_p}}
 
-<input type="submit" value="register">
-</form>
+        <input class="btn btn-primary m-auto w-100" type="submit" value="Register">
+        </form>
+        <div class="mt-3">
+            Already have an account? <a href="{% url 'login' %}">Sign in</a>
+        </div>
+    </div>
+</div>
 
-{% endblock %}
+{% endblock %} 

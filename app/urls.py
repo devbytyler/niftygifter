@@ -1,12 +1,17 @@
 from django.urls import include, path
+from django.contrib.auth.views import LoginView, LogoutView
+
+from app.forms import SigninForm
 
 from . import views
 
 urlpatterns = [
     # Accounts
     path('', views.home, name='home'),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/register', views.register, name='register'),
+    path('accounts/login/', views.sign_in, name='login'),
+    path('accounts/logout/', views.sign_out, name='logout'),
+    # path('login/', views.sign_in, name='login'),
+    path('accounts/register/', views.register, name='register'),
 
     # Events
     path('events/new', views.event_add_edit, name='event_new'),
@@ -20,7 +25,7 @@ urlpatterns = [
     # Recipients
     path('events/<int:event_id>/recipients/<int:pk>', views.recipient, name='recipient'),
     path('async/recipients/<int:pk>/chat', views.chat, name='recipient_chat'),
-
+  
     # Ideas
     path('events/<int:event_id>/recipients/<int:recipient_id>/ideas/new', views.idea_add_edit, name='idea_new'),
     path('events/<int:event_id>/recipients/<int:recipient_id>/ideas/<int:pk>', views.idea, name='idea'),

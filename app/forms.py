@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import authenticate
-from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.contrib.auth.password_validation import validate_password
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -27,22 +27,31 @@ class BaseForm:
 class SigninBaseForm(BaseForm, forms.ModelForm):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'password')
+        fields = ('username', 'password',)
         widgets = {
             'password': forms.PasswordInput(),
+        }
+        labels = {
+            'username': 'Email',
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].required = True
-        self.fields['email'].widget.attrs['class'] = 'form-control no-shadow'
+        self.fields['username'].help_text = None
+        self.fields['username'].widget.attrs['class'] = 'form-control no-shadow'
         self.fields['password'].widget.attrs['class'] = 'form-control no-shadow'
 
 
 class SigninForm(SigninBaseForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs['class'] = 'form-control no-shadow'
+        self.fields['password'].widget.attrs['class'] = 'form-control no-shadow'
+
     def clean(self):
-        email = self.cleaned_data.get('email')
+        email = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
         user = authenticate(None, username=email, password=password)
 
@@ -53,6 +62,16 @@ class SigninForm(SigninBaseForm):
 
 
 class SignupForm(SigninBaseForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name','username', 'password',)
+        widgets = {
+            'password': forms.PasswordInput(),
+        }
+        labels = {
+            'username': 'Email',
+        }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['password'].widget.attrs['autocomplete'] = 'new-password'

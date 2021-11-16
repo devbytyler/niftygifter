@@ -23,6 +23,29 @@ def home(request):
     }
     return render(request, "app/home.html", context)
 
+def sign_out(request):
+    logout(request)
+    return redirect('home')
+
+
+def sign_in(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    form = forms.SigninForm(request.POST if request.method == 'POST' else None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            user = form.cleaned_data.get('user')
+            if user:
+                login(request, user)
+                user.save()
+                return redirect(request.GET.get('next') or 'home')
+    context = {
+        'form': form,
+    }
+    return render(request, 'registration/login.html', context)
+
 
 def register(request):
     if request.method == "POST":
@@ -152,7 +175,7 @@ def event_membership_async(request, event_id, user_id):
 @login_required
 def recipient(request, event_id, pk):
     recipient = get_object_or_404(Recipient, pk=pk)
-    ideas = recipient.ideas.select_related("creator").all()
+    ideas = recipient.ideas.select_related("creator").order_by('-id')
 
     context = {"recipient": recipient, "ideas": ideas}
     return render(request, "app/recipient.html", context)

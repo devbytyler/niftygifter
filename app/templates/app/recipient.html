@@ -12,14 +12,14 @@
     <a href="{% url 'idea_new' recipient.event_id recipient.id %}" class="btn btn-primary"> + Add New Idea</a>
 
     {% for idea in ideas %}
-        <div class="card my-3 shadow border-0">
+        <div class="card clickable my-3 border-0">
             <div class="card-body">
                 <div class="flex-fill">
                     <div class="text-muted small">Submitted by: {{idea.creator.get_full_name}}</div>
                     <a href="{% url 'idea' recipient.event_id recipient.id idea.id %}"><h5>{{idea.title}}</h5></a>
                     <div>{{idea.description | urlize | url_target_blank | linebreaks}}</div>
                 </div>
-                {% if idea.creator_id == request.user_id or recipient.event.organizer_id == request.user_id %}
+                {% if idea.creator == request.user %}
                     <a href="{% url 'idea_edit' recipient.event_id recipient.id idea.id %}"><i class="bi bi-pencil"></i></a>
                 {% endif %}
             </div>

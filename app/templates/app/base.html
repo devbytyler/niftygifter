@@ -33,17 +33,17 @@
             <div class="container">
                 <a class="navbar-brand" href="{% url 'home' %}">
                     <img class="mb-2" width="50px" src="https://upload.wikimedia.org/wikipedia/commons/8/84/Gift_Flat_Icon_Vector.svg"/>
-                    Gifty
+                    Nifty Gifter
                 </a>
-                <div>
+                <div class="nav-item text-white">
                     {% if request.user.is_authenticated %}
                         {% if request.user.first_name %}
                             <span class="me-3">Hello, {{request.user.first_name}}</span>
                         {% endif %}
-                        <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-left me-1"></i> Logout</a>
+                        <a class="link-light" href="{% url 'logout' %}"><i class="bi bi-box-arrow-left me-1"></i> Logout</a>
                     {% else %}
-                        <a href="{% url 'login' %}">Login</a>
-                        <a href="{% url 'register' %}"> Register</a>
+                        <a class="link-light" href="{% url 'login' %}">Login</a>
+                        {% comment %} <a class="link-light" href="{% url 'register' %}"> Register</a> {% endcomment %}
                     {% endif %}
                 </div>
             </div>
