@@ -54,7 +54,7 @@
     </div>
 
     <div class="row">
-        {% for recipient in event.recipients.all %}
+        {% for recipient in recipients %}
         <div class="col-12 col-sm-6 col-lg-3 mb-4">
             {% if request.user in event.members.all %}
                 {% include 'components/recipient-card.html' with recipient=recipient%}

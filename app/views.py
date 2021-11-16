@@ -72,8 +72,10 @@ def event(request, pk):
         messages.success(request, "❌ Removed contributor.")
         event.members.remove(request.POST.get("delete-contributor"))
     add_recipient_form = forms.NewRecipientForm()
+    recipients = event.recipients.exclude(user=request.user)
     context = {
         "event": event,
+        "recipients": recipients,
         "add_recipient_form": add_recipient_form,
         # "json": {
         #     "event_id": event.id,
