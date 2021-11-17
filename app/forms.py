@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from app.models import User, Event, Idea
+from app.models import User, Event, Idea, Recipient
 
 class BaseForm:
     def add_form_control_class(self, fields=None, field_names=None):
@@ -40,15 +40,15 @@ class SigninBaseForm(BaseForm, forms.ModelForm):
         for field in self.fields:
             self.fields[field].required = True
         self.fields['username'].help_text = None
-        self.fields['username'].widget.attrs['class'] = 'form-control no-shadow'
-        self.fields['password'].widget.attrs['class'] = 'form-control no-shadow'
+        self.fields['username'].widget.attrs['class'] = 'form-control'
+        self.fields['password'].widget.attrs['class'] = 'form-control'
 
 
 class SigninForm(SigninBaseForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs['class'] = 'form-control no-shadow'
-        self.fields['password'].widget.attrs['class'] = 'form-control no-shadow'
+        self.fields['username'].widget.attrs['class'] = 'form-control'
+        self.fields['password'].widget.attrs['class'] = 'form-control'
 
     def clean(self):
         email = self.cleaned_data.get('username')
@@ -99,6 +99,15 @@ class IdeaForm(BaseForm, forms.ModelForm):
         model = Idea
         fields = ['title', 'description']
 
-class NewRecipientForm(BaseForm, forms.Form):
-    email = forms.EmailField(label='Recipient Email')
-    # is_anonymous = forms.BooleanField(label="Anonymous")
+class NewRecipientForm(BaseForm, forms.ModelForm):
+    class Meta: 
+        model = Recipient
+        fields = ['name', 'decider', 'blocked_users']
+
+    def __init__ (self, *args, **kwargs):
+        event = kwargs.pop("event")
+        super(NewRecipientForm, self).__init__(*args, **kwargs)
+        self.fields["decider"].widget = forms.widgets.RadioSelect()
+        self.fields["decider"].queryset = event.members.all()
+        self.fields["blocked_users"].widget = forms.widgets.CheckboxSelectMultiple()
+        self.fields["blocked_users"].queryset = event.members.all()

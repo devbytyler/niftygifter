@@ -36,14 +36,9 @@ class Event(models.Model):
 
 class Recipient(models.Model):
     name = models.CharField(max_length=50, blank=True, default="")
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="recipients")
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    decider = models.ForeignKey(User, related_name="decisions", on_delete=models.SET_NULL, null=True)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['event', 'user'], name='unique_event_recipient')
-        ]
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="recipients", blank=True)
+    blocked_users = models.ManyToManyField(User, related_name="block_recipients", blank=True)
+    decider = models.ForeignKey(User, related_name="decisions", on_delete=models.SET_NULL, null=True, blank=True)
 
     '''
     How does a recipient get added?

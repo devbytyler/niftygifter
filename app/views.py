@@ -71,11 +71,10 @@ def event(request, pk):
     if request.POST.get("delete-contributor"):
         messages.success(request, "❌ Removed contributor.")
         event.members.remove(request.POST.get("delete-contributor"))
-    add_recipient_form = forms.NewRecipientForm()
-    recipients = event.recipients.exclude(user=request.user)
+    add_recipient_form = forms.NewRecipientForm(event=event)
     context = {
         "event": event,
-        "recipients": recipients,
+        "recipients": event.recipients.all(),
         "add_recipient_form": add_recipient_form,
         # "json": {
         #     "event_id": event.id,
@@ -96,19 +95,13 @@ def event(request, pk):
 def event_recipients(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
     if request.method == "POST":
-        form = forms.NewRecipientForm(request.POST)
+        form = forms.NewRecipientForm(request.POST, event=event)
         if form.is_valid():
-            email = form.cleaned_data.get("email")
-            try:
-                user = User.objects.get(username=email)
-                Recipient.objects.create(
-                    event=event, user=user, name=user.get_full_name()
-                )
-                messages.success(request, "😎 Successfully added recipient.")
-            except IntegrityError:
-                messages.error(request, "👀 This user has already been added.")
-            except User.DoesNotExist:
-                messages.error(request, "😕 A user with this email does not exist.")
+            recipient = form.save(commit=False)
+            recipient.event = event
+            recipient.save()
+            form.save_m2m()
+            messages.success(request, "😎 Successfully added recipient.")
     return redirect("event", event_id)
 
 @login_required

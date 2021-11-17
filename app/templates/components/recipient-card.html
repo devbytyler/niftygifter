@@ -12,16 +12,21 @@
         </div>
         {% endif %}
     </div>
-    {% include 'components/avatar.html' with user=recipient.user %}
-    <a href="{% url 'recipient' event.id recipient.id %}"><h5 class="card-title">{{recipient.name}}</h5></a>
+    {% comment %} {% include 'components/avatar.html' with user=recipient.user %} {% endcomment %}
+    
+    {% if request.user in recipient.blocked_users.all %}
+      <h5 class="card-title">{{recipient.name}}</h5>
+    {% else %}
+      <a href="{% url 'recipient' event.id recipient.id %}">
+        <h5 class="card-title">{{recipient.name}}</h5>
+      </a>
+    {% endif %}
+      
     <div class="d-flex justify-content-between">
-      <span> Ideas:</span>
-      <div>
-        {{recipient.ideas.count}}
-      </div>
+      <span> Ideas: {{recipient.ideas.count}}</span>
     </div>
     <div class="d-flex justify-content-between">
-      <span> Decider:</span>
+      <span> Decider: {{recipient.decider.get_full_name}}</span>
     </div>
   </div>
 </div>
