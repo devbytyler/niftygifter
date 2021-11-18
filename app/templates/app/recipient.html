@@ -16,7 +16,8 @@
             <div class="card-body">
                 <div class="flex-fill">
                     <div class="text-muted small">Submitted by: {{idea.creator.get_full_name}}</div>
-                    <a href="{% url 'idea' recipient.event_id recipient.id idea.id %}"><h5>{{idea.title}}</h5></a>
+                    {% comment %} <a href="{% url 'idea' recipient.event_id recipient.id idea.id %}"><h5>{{idea.title}}</h5></a> {% endcomment %}
+                    <h5>{{idea.title}}</h5>
                     <div>{{idea.description | urlize | url_target_blank | linebreaks}}</div>
                 </div>
                 {% if idea.creator == request.user %}

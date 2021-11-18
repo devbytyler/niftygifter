@@ -91,17 +91,47 @@ def event(request, pk):
     return render(request, "app/event.html", context)
 
 @login_required
-def event_recipients(request, event_id):
+def recipients_add_edit(request, event_id, recipient_id=None):
     event = get_object_or_404(Event, pk=event_id)
+    recipient = None
+    if recipient_id:
+        recipient = get_object_or_404(Recipient, pk=recipient_id)
     if request.method == "POST":
-        form = forms.NewRecipientForm(request.POST, event=event)
+        form = forms.NewRecipientForm(request.POST, instance=recipient, event=event)
         if form.is_valid():
             recipient = form.save(commit=False)
             recipient.event = event
             recipient.save()
             form.save_m2m()
-            messages.success(request, "😎 Successfully added recipient.")
-    return redirect("event", event_id)
+            messages.success(request, "😎 Successfully saved recipient.")
+            return redirect("event", event_id)
+    else:
+        form = forms.NewRecipientForm(instance=recipient, event=event)
+    context = {
+        'form': form,
+    }
+    return render(request, 'app/recipient_add_edit.html', context)
+
+@login_required
+def recipient_ideas(request, event_id, recipient_id):
+    recipient = get_object_or_404(Recipient, pk=recipient_id)
+    ideas = recipient.ideas.select_related("creator").order_by('-id')
+
+    context = {"recipient": recipient, "ideas": ideas}
+    return render(request, "app/recipient.html", context)
+
+# @login_required
+# def event_recipients(request, event_id):
+#     event = get_object_or_404(Event, pk=event_id)
+#     if request.method == "POST":
+#         form = forms.NewRecipientForm(request.POST, event=event)
+#         if form.is_valid():
+#             recipient = form.save(commit=False)
+#             recipient.event = event
+#             recipient.save()
+#             form.save_m2m()
+#             messages.success(request, "😎 Successfully added recipient.")
+#     return redirect("event", event_id)
 
 @login_required
 def remove_event_recipient(request, event_id, recipient_id):
@@ -167,14 +197,6 @@ def event_membership_async(request, event_id, user_id):
 
 
 @login_required
-def recipient(request, event_id, pk):
-    recipient = get_object_or_404(Recipient, pk=pk)
-    ideas = recipient.ideas.select_related("creator").order_by('-id')
-
-    context = {"recipient": recipient, "ideas": ideas}
-    return render(request, "app/recipient.html", context)
-
-@login_required
 def idea(request, event_id, recipient_id, pk):
     idea = get_object_or_404(Idea, pk=pk)
     context = {"idea": idea}
@@ -191,7 +213,7 @@ def idea_add_edit(request, event_id, recipient_id, pk=None):
             if form.is_valid():
                 form.save()
                 messages.success(request, "💡 Idea saved.")
-                return redirect("recipient", event_id, recipient_id)
+                return redirect("recipient_ideas", event_id, recipient_id)
         else:
             form = forms.IdeaForm(instance=idea)
     else:
@@ -203,14 +225,14 @@ def idea_add_edit(request, event_id, recipient_id, pk=None):
                 new_idea.recipient_id = recipient_id
                 new_idea.save()
                 messages.success(request, "💡 Idea added.")
-                return redirect("recipient", event_id, recipient_id)
+                return redirect("recipient_ideas", event_id, recipient_id)
         else:
             form = forms.IdeaForm()
 
     context = {
         "idea": idea,
         "form": form,
-        "back": reverse("recipient", args=[event_id, recipient_id]),
+        "back": reverse("recipient_ideas", args=[event_id, recipient_id]),
     }
     return render(request, "app/idea_add_edit.html", context)
 

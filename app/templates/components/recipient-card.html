@@ -12,7 +12,8 @@
               <i class="bi bi-three-dots"></i>
             </a>
             <ul class="dropdown-menu" aria-labelledby="recipient-menu-{{recipient.id}}" >
-              <li><a class="dropdown-item text-danger" href="{% url 'event_recipients_remove' event.id recipient.id %}"><i class="bi bi-trash"></i> Delete Recipient</a></li>
+              <li><a class="dropdown-item text-danger" href="{% url 'event_recipients_remove' event.id recipient.id %}"><i class="bi bi-trash"></i> Delete</a></li>
+              <li><a class="dropdown-item text-primary" href="{% url 'event_recipients_edit' event.id recipient.id %}"><i class="bi bi-pencil"></i> Edit</a></li>
             </ul>
         </div>
         {% endif %}
@@ -22,7 +23,7 @@
     {% if request.user in recipient.blocked_users.all %}
       <h5 class="card-title">{{recipient.name}}</h5>
     {% else %}
-      <a href="{% url 'recipient' event.id recipient.id %}">
+      <a href="{% url 'recipient_ideas' event.id recipient.id %}">
         <h5 class="card-title">{{recipient.name}}</h5>
       </a>
     {% endif %}

@@ -2,16 +2,21 @@
 
 {% block content %}
 
-<a href="{{back}}">Back</a>
 
-<div>Here is my idea add edit page</div>
+<a href="{{back}}"> < Back</a>
 
-<form method="post">
-{% csrf_token %}
+<div class="card mt-4 mx-auto" style="max-width: 700px;">
+    <div class="card-body">
+        <form method="post">
+        {% csrf_token %}
 
-{{form.as_p}}
+        {{form.as_p}}
 
-<input type="submit" value="save">
-</form>
+        <input class="btn btn-primary" type="submit" value="Save">
+        </form>
+    </div>
+</div>
+
+
 
 {% endblock content %}
