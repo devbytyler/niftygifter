@@ -24,7 +24,8 @@ class BaseForm:
         self.add_form_control_class(self.fields)
 
 
-class SigninBaseForm(BaseForm, forms.ModelForm):
+
+class SigninForm(BaseForm, forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'password',)
@@ -35,16 +36,6 @@ class SigninBaseForm(BaseForm, forms.ModelForm):
             'username': 'Email',
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].required = True
-        self.fields['username'].help_text = None
-        self.fields['username'].widget.attrs['class'] = 'form-control'
-        self.fields['password'].widget.attrs['class'] = 'form-control'
-
-
-class SigninForm(SigninBaseForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['username'].widget.attrs['class'] = 'form-control'
@@ -61,20 +52,13 @@ class SigninForm(SigninBaseForm):
         return self.cleaned_data
 
 
-class SignupForm(SigninBaseForm):
+class SignupForm(BaseForm, forms.ModelForm):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name','username', 'password',)
+        fields = ('first_name', 'last_name', 'email', 'password',)
         widgets = {
             'password': forms.PasswordInput(),
         }
-        labels = {
-            'username': 'Email',
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['password'].widget.attrs['autocomplete'] = 'new-password'
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -82,11 +66,12 @@ class SignupForm(SigninBaseForm):
             raise forms.ValidationError(mark_safe(f'Email address is already in use. Try <a href="{reverse("login")}">signing in</a>.'))
         return email
 
-    def save(self, *args, **kwargs):
+    def save(self, commit=True, *args, **kwargs):
         user = super().save(commit=False, *args, **kwargs)
         user.set_password(self.cleaned_data['password'])
         user.username = user.email
-        user.save()
+        if (commit):
+            user.save()
         return user
 
 class EventForm(BaseForm, forms.ModelForm):

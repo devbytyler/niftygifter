@@ -1,6 +1,11 @@
 <div class="card clickable recipient position-relative border-0">
   <div class="card-body">
-    <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-between">
+        <div>
+         {% if request.user in recipient.blocked_users.all %}
+          <small class="text-muted"><i class="bi bi-lock"></i> No access</small>
+        {% endif %}
+        </div>
         {% if request.user == event.organizer %}
         <div class="dropdown">
             <a href="#" type="button" id="recipient-menu-{{recipient.id}}" data-bs-toggle="dropdown" aria-expanded="false">
@@ -23,10 +28,10 @@
     {% endif %}
       
     <div class="d-flex justify-content-between">
-      <span> Ideas: {{recipient.ideas.count}}</span>
+      <span><span class="text-muted">Ideas: </span>{{recipient.ideas.count}}</span>
     </div>
     <div class="d-flex justify-content-between">
-      <span> Decider: {{recipient.decider.get_full_name}}</span>
+      <span><span class="text-muted">Assigned: </span>{{recipient.decider.get_full_name|default:"None"}}</span>
     </div>
   </div>
 </div>

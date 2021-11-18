@@ -1,0 +1,4 @@
+app/static/app/css/*/.css
+app/static/app/css/*/.css.map
+
+*.pyc

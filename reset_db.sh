@@ -13,7 +13,7 @@ if [ "$IS_AWS" == "True" ]; then
   psql postgres -c "DROP DATABASE $DB_DATABASE" -h $DB_HOSTNAME -U $DB_USER
   psql postgres -c "CREATE DATABASE $DB_DATABASE" -h $DB_HOSTNAME -U $DB_USER
 else
-  psql -U postgres -c "DROP DATABASE gifty"
+  psql -U postgres -c "DROP DATABASE gifty with (FORCE)"
   psql -U postgres -c "CREATE DATABASE gifty"
 fi
 echo "🦆 Migrating New Database"
