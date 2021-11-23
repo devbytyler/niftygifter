@@ -1,5 +1,9 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+
+from multiavatar.multiavatar import multiavatar
 
 # Create your models here.
 
@@ -15,6 +19,9 @@ class User(AbstractUser):
     is_authenticated()
     '''
     pass
+    @property
+    def avatar(self):
+        return multiavatar(self.username, None, None)
 
 class Event(models.Model):
     title = models.CharField(max_length=100)
@@ -52,6 +59,10 @@ class Idea(models.Model):
     description = models.TextField(blank=True, default='')
     recipient = models.ForeignKey(Recipient, related_name='ideas', on_delete=models.CASCADE)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    likes = models.ManyToManyField(User, related_name="likes")
+    created_at = models.DateTimeField(auto_now_add=True)
+    # created_at = models.DateTimeField(auto_now_add=True)
+    
     # price = models.FloatField(default=0.0)
     # link = models.CharField(max_length=200, blank=True, default='')
     # likers = models.ManyToManyField(User, related_name='likes')

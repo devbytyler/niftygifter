@@ -237,9 +237,20 @@ def idea_add_edit(request, event_id, recipient_id, pk=None):
     return render(request, "app/idea_add_edit.html", context)
 
 @login_required
-def like_idea(request, idea_id):
-    idea = get_object_or_404(Idea, pk=idea_id)
-    return redirect("idea", idea.recipient.event.id, idea.recipient.id, idea_id)
+def idea_delete(request, event_id, recipient_id, pk):
+    idea = get_object_or_404(Idea, pk=pk)
+    idea.delete()
+    messages.success(request, "Success! Idea removed.")
+    return redirect('recipient_ideas', event_id, recipient_id)
+
+@login_required
+def idea_like(request, event_id, recipient_id, pk):
+    idea = get_object_or_404(Idea, pk=pk)
+    if idea.likes.filter(id=request.user.id).exists():
+        idea.likes.remove(request.user)
+    else:
+        idea.likes.add(request.user)
+    return redirect("recipient_ideas", event_id, recipient_id)
 
 
 def chat(request, pk):

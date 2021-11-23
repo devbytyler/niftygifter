@@ -1,9 +1,10 @@
-<div class="avatar rounded-circle bg-secondary text-white">
-    <div>
+<div class="avatar rounded-circle text-white">
+    {{user.avatar|safe}}
+    {% comment %} <div>
         {% if user.first_name and user.last_name %}
             {{user.first_name | first | upper}}{{user.last_name | first | upper}}
         {% else %}
             {{user.username|slice:'0:2'|upper}}
         {% endif %}
-    </div>
+    </div> {% endcomment %}
 </div>
