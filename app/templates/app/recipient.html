@@ -29,7 +29,7 @@
                             {% endif %}   
                         </a>
                         <span>{{idea.likes.all.count}}</span>
-                        <i class="bi bi-chat p-1 ms-2"></i>
+                        {% comment %} <i class="bi bi-chat p-1 ms-2"></i> {% endcomment %}
                     </div>
                     <div>
                         {% if idea.creator == request.user %}
