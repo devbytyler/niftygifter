@@ -10,20 +10,16 @@
                 <h1>{{event.title}}</h1>
                 <div>{{event.exchange_date}}</div>
             </div>
-            <div class="col-12 col-md-5">
-                <div>Event Contributors:</div>
-                <div class="d-flex members pointer" data-bs-toggle="modal" data-bs-target="#contributors-modal">
+            <div class="col-12 col-md-4">
+                <div class="mb-2 avatar-row pointer" data-bs-toggle="modal" data-bs-target="#contributors-modal">
                     {% for member in event.members.all %}
-                    {% include 'components/avatar.html' with user=member%}
+                    <div class="avatar">
+                        {{member.avatar|safe}}
+                    </div>
                     {% endfor %}
-                    
-                    {% if request.user == event.organizeer %}
-                    <div class="avatar add-member border rounded-circle">+</div>
-                    {% endif %}
-                        
                 </div>
             </div>
-            <div class="col-12 col-md-2 text-end">
+            <div class="col-12 col-md-3 d-flex flex-wrap align-items-center justify-content-end gap-2">
                 {% if event.organizer != request.user %}
                 <a class="btn btn-outline-primary btn-sm" href="{% url 'event_membership' event.id %}">
                     {% if request.user in event.members.all %}Leave{% else %}Join{% endif %} Event
@@ -34,7 +30,7 @@
                         <input type="hidden" name="delete" value="delete">
                         <input type="submit" name="delete" class="btn btn-danger" value="Delete Event"/>
                     </form>
-                    <a href="{% url 'event_edit' event.id %}" class="btn btn-primary m-2">Edit</a>
+                    <a href="{% url 'event_edit' event.id %}" class="btn btn-primary">Edit</a>
                 {% endif %}
             </div>
         </div>
