@@ -33,7 +33,9 @@
     </div>
     <div class="d-flex align-items-center">
       <span class="text-muted">Assigned: </span>
+      {% if recipient.decider.avatar %}  
       <div class="avatar mx-2" style="width: 1.5em; height: 1.5em">{{recipient.decider.avatar|safe}}</div>
+      {% endif %}
       <span>{{recipient.decider.get_full_name|default:"None"}}</span>
     </div>
   </div>
