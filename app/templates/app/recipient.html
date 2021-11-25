@@ -28,7 +28,16 @@
                                 <i class="bi bi-hand-thumbs-up p-1"></i>
                             {% endif %}
                         </a>
-                        <span>{{idea.likes.all.count}}</span>
+                        
+                        {% if idea.likes.all %}
+                        <small>Liked by 
+                        {% for liker in idea.likes.all %}
+                            {% if forloop.last and not forloop.first %}and{% endif %}
+                            {{liker.first_name}}{% if not forloop.last%},{% endif %}
+                        {% endfor %}
+                        </small>
+                        {% endif %}
+                            
                         {% comment %} <i class="bi bi-chat p-1 ms-2"></i> {% endcomment %}
                     </div>
                     <div>
