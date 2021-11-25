@@ -89,6 +89,7 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fit,  minmax(10px, max-content)) ;
   gap: 5px;
+  margin-right: 20px;
 }
 
 .avatar {
