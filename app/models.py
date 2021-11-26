@@ -2,6 +2,8 @@ import datetime
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 
 from multiavatar.multiavatar import multiavatar
 
@@ -54,6 +56,14 @@ class Recipient(models.Model):
     - Admin can create an external member 
     '''
 
+class Notification(models.Model):
+    read = models.BooleanField(default=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.CharField(max_length=100)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
 class Idea(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, default='')
@@ -61,6 +71,7 @@ class Idea(models.Model):
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     likes = models.ManyToManyField(User, related_name="likes")
     created_at = models.DateTimeField(auto_now_add=True)
+    notifications = GenericRelation(Notification)
     # created_at = models.DateTimeField(auto_now_add=True)
     
     # price = models.FloatField(default=0.0)

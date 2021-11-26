@@ -7,10 +7,11 @@ from django.urls.base import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
+from django.db.models import Q, Count
 
 from app import forms
 
-from app.models import Chat, User, Event, Recipient, Idea
+from app.models import Chat, Notification, User, Event, Recipient, Idea
 
 
 def home(request):
@@ -23,28 +24,29 @@ def home(request):
     }
     return render(request, "app/home.html", context)
 
+
 def sign_out(request):
     logout(request)
-    return redirect('home')
+    return redirect("home")
 
 
 def sign_in(request):
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect("home")
 
-    form = forms.SigninForm(request.POST if request.method == 'POST' else None)
+    form = forms.SigninForm(request.POST if request.method == "POST" else None)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
-            user = form.cleaned_data.get('user')
+            user = form.cleaned_data.get("user")
             if user:
                 login(request, user)
                 user.save()
-                return redirect(request.GET.get('next') or 'home')
+                return redirect(request.GET.get("next") or "home")
     context = {
-        'form': form,
+        "form": form,
     }
-    return render(request, 'registration/login.html', context)
+    return render(request, "registration/login.html", context)
 
 
 def register(request):
@@ -70,25 +72,21 @@ def event(request, pk):
     if request.POST.get("delete-contributor"):
         messages.success(request, "❌ Removed contributor.")
         event.members.remove(request.POST.get("delete-contributor"))
-    add_recipient_form = forms.NewRecipientForm(event=event)
+    recipients = event.recipients.annotate(
+        notifications=Count(
+            "ideas__notifications",
+            filter=Q(
+                ideas__notifications__read=False,
+                ideas__notifications__user=request.user
+            ),
+        )
+    )
     context = {
         "event": event,
-        "recipients": event.recipients.all(),
-        "add_recipient_form": add_recipient_form,
-        # "json": {
-        #     "event_id": event.id,
-        #     "contributors": [
-        #         {
-        #             "id": user.id,
-        #             "first_name": user.first_name,
-        #             "last_name": user.last_name,
-        #             "username": user.username,
-        #         }
-        #         for user in event.members.all()
-        #     ],
-        # },
+        "recipients": recipients.order_by('id')
     }
     return render(request, "app/event.html", context)
+
 
 @login_required
 def recipients_add_edit(request, event_id, recipient_id=None):
@@ -108,17 +106,20 @@ def recipients_add_edit(request, event_id, recipient_id=None):
     else:
         form = forms.NewRecipientForm(instance=recipient, event=event)
     context = {
-        'form': form,
+        "form": form,
     }
-    return render(request, 'app/recipient_add_edit.html', context)
+    return render(request, "app/recipient_add_edit.html", context)
+
 
 @login_required
 def recipient_ideas(request, event_id, recipient_id):
     recipient = get_object_or_404(Recipient, pk=recipient_id)
-    ideas = recipient.ideas.select_related("creator").order_by('-id')
+    ideas = recipient.ideas.select_related("creator").order_by("-id")
+    Notification.objects.filter(content_type__model='idea', user=request.user).update(read=True)
 
     context = {"recipient": recipient, "ideas": ideas}
     return render(request, "app/recipient.html", context)
+
 
 # @login_required
 # def event_recipients(request, event_id):
@@ -133,10 +134,12 @@ def recipient_ideas(request, event_id, recipient_id):
 #             messages.success(request, "😎 Successfully added recipient.")
 #     return redirect("event", event_id)
 
+
 @login_required
 def remove_event_recipient(request, event_id, recipient_id):
     get_object_or_404(Recipient, pk=recipient_id).delete()
     return redirect("event", event_id)
+
 
 @login_required
 def event_add_edit(request, pk=None):
@@ -164,6 +167,7 @@ def event_add_edit(request, pk=None):
             form = forms.EventForm()
     context = {"form": form}
     return render(request, "app/event_add_edit.html", context)
+
 
 @login_required
 def event_membership(request, pk):
@@ -202,9 +206,12 @@ def idea(request, event_id, recipient_id, pk):
     context = {"idea": idea}
     return render(request, "app/idea.html", context)
 
+
 @login_required
 def idea_add_edit(request, event_id, recipient_id, pk=None):
     idea = None
+    event = get_object_or_404(Event, pk=event_id)
+    recipient = get_object_or_404(Recipient, pk=recipient_id)
 
     if pk:
         idea = get_object_or_404(Idea, pk=pk)
@@ -224,6 +231,13 @@ def idea_add_edit(request, event_id, recipient_id, pk=None):
                 new_idea.creator = request.user
                 new_idea.recipient_id = recipient_id
                 new_idea.save()
+                blocked_user_ids = recipient.blocked_users.values_list("id", flat=True)
+                for user in event.members.exclude(id=request.user.id).exclude(id__in=blocked_user_ids):
+                    Notification.objects.create(
+                        user=user,
+                        message="An idea was added",
+                        content_object=new_idea,
+                    )
                 messages.success(request, "💡 Idea added.")
                 return redirect("recipient_ideas", event_id, recipient_id)
         else:
@@ -236,12 +250,14 @@ def idea_add_edit(request, event_id, recipient_id, pk=None):
     }
     return render(request, "app/idea_add_edit.html", context)
 
+
 @login_required
 def idea_delete(request, event_id, recipient_id, pk):
     idea = get_object_or_404(Idea, pk=pk)
     idea.delete()
     messages.success(request, "Success! Idea removed.")
-    return redirect('recipient_ideas', event_id, recipient_id)
+    return redirect("recipient_ideas", event_id, recipient_id)
+
 
 @login_required
 def idea_like(request, event_id, recipient_id, pk):
