@@ -72,18 +72,20 @@ def event(request, pk):
     if request.POST.get("delete-contributor"):
         messages.success(request, "❌ Removed contributor.")
         event.members.remove(request.POST.get("delete-contributor"))
-    recipients = event.recipients.annotate(
-        notifications=Count(
-            "ideas__notifications",
-            filter=Q(
-                ideas__notifications__read=False,
-                ideas__notifications__user=request.user
-            ),
+    recipients = event.recipients.order_by('id')
+    if request.user.is_authenticated:
+        recipients = event.recipients.annotate(
+            notifications=Count(
+                "ideas__notifications",
+                filter=Q(
+                    ideas__notifications__read=False,
+                    ideas__notifications__user=request.user
+                ),
+            )
         )
-    )
     context = {
         "event": event,
-        "recipients": recipients.order_by('id')
+        "recipients": recipients
     }
     return render(request, "app/event.html", context)
 
