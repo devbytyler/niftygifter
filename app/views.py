@@ -117,7 +117,8 @@ def recipients_add_edit(request, event_id, recipient_id=None):
 def recipient_ideas(request, event_id, recipient_id):
     recipient = get_object_or_404(Recipient, pk=recipient_id)
     ideas = recipient.ideas.select_related("creator").order_by("-id")
-    Notification.objects.filter(content_type__model='idea', user=request.user).update(read=True)
+    ideas_ids = ideas.values_list('id', flat=True)
+    Notification.objects.filter(content_type__model='idea', object_id__in=ideas_ids, user=request.user).update(read=True)
 
     context = {"recipient": recipient, "ideas": ideas}
     return render(request, "app/recipient.html", context)
