@@ -1,10 +1,4 @@
 <div class="card clickable recipient position-relative border-0">
-  {% if recipient.notifications %}
-  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-    {{recipient.notifications}}
-    <span class="visually-hidden">unread notifications</span>
-  </span>
-  {% endif %}
   <div class="card-body">
     <div class="d-flex justify-content-between">
         <div>
@@ -34,8 +28,17 @@
       </a>
     {% endif %}
       
-    <div class="d-flex justify-content-between">
-      <span><span class="text-muted">Ideas: </span>{{recipient.ideas.count}}</span>
+    <div class="d-flex align-items-center">
+      <span>
+        <span class="text-muted">Ideas: </span>
+        {{recipient.ideas.count}}
+      </span>
+      {% if recipient.notifications %}
+      <span class="badge rounded-pill bg-danger ms-2">
+        {{recipient.notifications}} new
+        <span class="visually-hidden">unread notifications</span>
+      </span>
+      {% endif %}
     </div>
     <div class="d-flex align-items-center">
       <span class="text-muted">Assigned: </span>

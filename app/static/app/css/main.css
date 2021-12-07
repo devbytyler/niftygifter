@@ -100,3 +100,11 @@ a {
 .avatar svg {
   width: 100%;
 }
+
+.add-idea-card {
+  border-style: dashed !important;
+}
+
+.add-idea-card:hover {
+  background-color: #dee2e6 !important;
+}
