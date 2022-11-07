@@ -37,7 +37,7 @@
             <div class="col-12 col-md-6">
                 <div class="mb-2 avatar-row pointer mt-2 mt-md-0" data-bs-toggle="modal" data-bs-target="#contributors-modal">
                     {% for member in event.members.all %}
-                    <div class="avatar">
+                    <div data-bs-toggle="tooltip" class="avatar" title="{{member.get_full_name}}">
                         {{member.avatar|safe}}
                     </div>
                     {% endfor %}

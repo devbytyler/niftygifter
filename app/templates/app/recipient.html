@@ -3,10 +3,17 @@
 
 {% block content %}
 <div class="recipient">
+    {% if is_blocked %}
+        <div class="alert alert-warning">You have restricted access to this recipient. You may add ideas, but all other activity is hidden from you.</div>
+    {% endif %}
+
     <div class="d-flex justify-content-between mb-2">
-        <a href="{% url 'event' recipient.event_id %}"><i class="bi bi-arrow-left"></i> Back</a>
+        <a href="{% url 'event' recipient.event_id %}"><i class="bi bi-arrow-left"></i> Back to event</a>
+        {% if not is_blocked %}
         <button class="btn btn-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i class="bi bi-chat me-2"></i>Open Chat</button>
+        {% endif %}
     </div>
+
     <div class="d-flex align-items-center">
         <h1 class="flex-fill">{{recipient.name}}</h1>
     </div>
@@ -23,12 +30,17 @@
     {% for idea in ideas %}
         <div class="card my-3 border-0">
             <div class="card-body">
-                <div class="text-muted small my-2">Added by {{idea.creator.get_full_name}} {{idea.created_at | timesince | upto:','}} ago</div>
+                <div class="d-flex justify-content-between">
+                    <div class="text-muted small my-2">Added by {{idea.creator.get_full_name}} {{idea.created_at | timesince | upto:','}} ago</div>
+                    {% comment %} {% if recipient.decider == request.user %}
+                    <button class="btn btn-sm btn-outline-success">Select</button>
+                    {% endif %} {% endcomment %}
+                </div>
                 <h5>{{idea.title}}</h5>
                 <div>{{idea.description | urlizetrunc:63 | url_target_blank | linebreaks}}</div>
                 <div class="idea-actions d-flex justify-content-between text-muted">
                     <div>
-                        <a href="{% url 'idea_like' recipient.event_id recipient.id idea.id %}">
+                        <a data-bs-toggle="tooltip" title="{% if request.user in idea.likes.all %}You like this{% else %}Like this idea{% endif %}" href="{% url 'idea_like' recipient.event_id recipient.id idea.id %}">
                             {% if request.user in idea.likes.all %}
                                 <i class="bi bi-hand-thumbs-up-fill p-1"></i>  
                             {% else %}
@@ -36,7 +48,7 @@
                             {% endif %}
                         </a>
                         
-                        {% if idea.likes.all %}
+                        {% if idea.likes.all and not is_blocked %}
                         <small>Liked by 
                         {% for liker in idea.likes.all %}
                             {% if forloop.last and not forloop.first %}and{% endif %}
@@ -60,7 +72,9 @@
     {% endfor %}
 </div>
 
+{% if not is_blocked %}
 {% include 'components/chat.html' %}
+{% endif %}
 
 
 {% endblock content %}

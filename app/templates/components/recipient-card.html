@@ -3,7 +3,9 @@
     <div class="d-flex justify-content-between">
         <div>
          {% if request.user in recipient.blocked_users.all %}
-          <small class="text-muted"><i class="bi bi-lock"></i> No access</small>
+          <small class="text-danger"><i class="bi bi-eye-slash"></i> Restricted</small>
+        {% else %}
+          <br>
         {% endif %}
         </div>
         {% if request.user == event.organizer %}
@@ -20,20 +22,20 @@
     </div>
     {% comment %} {% include 'components/avatar.html' with user=recipient.user %} {% endcomment %}
     
-    {% if request.user in recipient.blocked_users.all %}
+    <a href="{% url 'recipient_ideas' event.id recipient.id %}">
       <h5 class="card-title">{{recipient.name}}</h5>
-    {% else %}
-      <a href="{% url 'recipient_ideas' event.id recipient.id %}">
-        <h5 class="card-title">{{recipient.name}}</h5>
-      </a>
-    {% endif %}
-      
+    </a>
+
     <div class="d-flex align-items-center">
       <span>
         <span class="text-muted">Ideas: </span>
-        {{recipient.ideas.count}}
+        {% if request.user in recipient.blocked_users.all %}
+          ???
+        {% else %}
+          {{recipient.ideas.count}}
+        {% endif %}
       </span>
-      {% if recipient.notifications %}
+      {% if recipient.notifications and not request.user in recipient.blocked_users.all %}
       <span class="badge rounded-pill bg-danger ms-2">
         {{recipient.notifications}} new
         <span class="visually-hidden">unread notifications</span>
