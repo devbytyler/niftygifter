@@ -93,13 +93,12 @@
 {% comment %} {{ json|json_script:'data' }} {% endcomment %}
 <script defer>
     //var data = JSON.parse(document.getElementById('data').textContent);
-    var app = new Vue({
-        el: '#event',
-        delimiters: ['[[', ']]'],
-        data: {
+    const { createApp } = Vue
+
+    createApp({
+        data: () => ({
             message: 'Hello Vue',
-            // contributors: data.contributors,
-        },
+        }),
         methods: {
             deleteEvent(e) {
                 Swal.fire({
@@ -119,7 +118,7 @@
             //    axios.post(`/async/events/{{event.id}}/membership/${userId}`);
             //}
         }
-    });
+    }).mount('#event')
 </script>
 {% endblock app %}
 

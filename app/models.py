@@ -92,7 +92,8 @@ class Chat(models.Model):
             "content": self.content,
             "created_at": self.created_at,
             "user": self.user.get_full_name(),
-            "user_id": self.user.id
+            "user_id": self.user.id,
+            "user_avatar": self.user.avatar,
         }
 
 

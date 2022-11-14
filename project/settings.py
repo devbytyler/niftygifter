@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 from django.contrib.messages import constants as messages
 import os
-import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,12 +28,17 @@ IS_PROD = 'IS_PROD' in os.environ
 DEBUG = not IS_PROD
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    'nifty-gifter.fly.dev',
+]
 
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 
-VUEJS_SRC = 'https://cdn.jsdelivr.net/npm/vue/dist/vue.js' if DEBUG else 'https://cdn.jsdelivr.net/npm/vue'
+# VUEJS_SRC = 'https://cdn.jsdelivr.net/npm/vue/dist/vue.js' if DEBUG else 'https://cdn.jsdelivr.net/npm/vue'
+# VUEJS_SRC = 'https://cdn.jsdelivr.net/npm/vue'
+VUEJS_SRC = 'https://unpkg.com/vue@3/dist/vue.global.js'
 
 
 # Application definition
@@ -57,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -89,9 +94,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'gifty',
-        'USER': 'gifty',
-        'PASSWORD': 'gifty',
-        'HOST': 'localhost',
+        'USER': 'postgres',
+        'PASSWORD': '13fe941fb0a917bfce86b900c788c934e9e778708f5503a3' if IS_PROD else 'gifty',
+        'HOST': 'nifty-gifter-db.internal' if IS_PROD else 'localhost',
         'PORT': '',
     }
 }
@@ -140,6 +145,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'    
     
@@ -187,4 +193,4 @@ LOGGING = {
     }
 }
 
-django_heroku.settings(locals())
+

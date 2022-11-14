@@ -52,6 +52,17 @@
   overflow-wrap: break-word;
 }
 
+.chat .message-group {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.chat.me .message-group {
+  flex-direction: row-reverse;
+}
+
 /* .chat.me .message:before {
   content: "";
   width: 0px;

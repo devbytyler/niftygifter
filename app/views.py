@@ -6,7 +6,6 @@ from django.contrib.auth import login, logout
 from django.urls.base import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db import IntegrityError
 from django.db.models import Q, Count
 
 from app import forms

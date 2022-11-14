@@ -1,71 +1,104 @@
 <div id="chat">
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-        <div class="offcanvas-header border-bottom bg-light">
-            <h5 id="offcanvasRightLabel">Chat</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body d-flex flex-column-reverse align-items-start">
-            <div v-for="chat in chats" :key="chat.id" class="chat" :class="{me : chat.user_id === currentUserId}">
-                <small class="text-muted">
-                  <span v-if="chat.user_id !== currentUserId">[[chat.user]] -</span>
-                  <span>[[chat.created_at | date]]</span>
-                </small>
-                <div class="p-2 mb-3 shadow-sm border message">[[chat.content]]</div>
-            </div>
-        </div>
-        <div class="p-3 border-top bg-light">
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" v-model="message" @keyup.enter="send" placeholder="Send a message..." aria-describedby="send-button-addon">
-            <button class="btn btn-primary" :disabled="!message.length" type="button" id="send-button-addon" @click="send">Send<i class="bi bi-arrow-up"></i></button>
-          </div>
-        </div>
+  <div
+    class="offcanvas offcanvas-end"
+    tabindex="-1"
+    id="offcanvasRight"
+    aria-labelledby="offcanvasRightLabel"
+  >
+    <div class="offcanvas-header border-bottom bg-light">
+      <h5 id="offcanvasRightLabel">Chat</h5>
+      <button
+        type="button"
+        class="btn-close text-reset"
+        data-bs-dismiss="offcanvas"
+        aria-label="Close"
+      ></button>
     </div>
+    <div class="offcanvas-body d-flex flex-column-reverse align-items-start">
+      <div
+        v-for="chat in chats"
+        :key="chat.id"
+        class="chat"
+        :class="{me : chat.user_id === currentUserId}"
+      >
+        <small class="text-muted">
+          <span v-if="chat.user_id !== currentUserId">[[chat.user]] - </span>
+          <span>[[displayDate(chat.created_at)]]</span>
+        </small>
+        <div class="message-group mb-3">
+          <div v-if="chat.user_id !== currentUserId" style="height: 32px; width: 32px;" v-html="chat.user_avatar"></div>
+          <div class="p-2 shadow-sm border message">[[chat.content]]</div>
+        </div>
+      </div>
+    </div>
+    <div class="p-3 border-top bg-light">
+      <div class="input-group mb-3">
+        <input
+          type="text"
+          class="form-control"
+          v-model="message"
+          @keyup.enter="send"
+          placeholder="Send a message..."
+          aria-describedby="send-button-addon"
+        />
+        <button
+          class="btn btn-primary"
+          :disabled="!message.length"
+          type="button"
+          id="send-button-addon"
+          @click="send"
+        >
+          Send<i class="bi bi-arrow-up"></i>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-var app = new Vue({
-  el: '#chat',
-  delimiters: ['[[', ']]'],
-  filters: {
-    date: function (value) {
-      if (!value) return '';
-      var date = new Date(value);
-      var options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-      return new Intl.DateTimeFormat('en-US', options).format(date);
-    }
-  },
-  data: {
-    message: 'Hello Vue!',
-    polling: null,
-    chats: [],
-    currentUserId: {{request.user.id}},
-    message: '',
-  },
-  created() {
-    this.getChats();
-	  this.pollChats();
-  },
-  beforeDestroy () {
-	  clearInterval(this.polling);
-  },
-  methods: {
-    async getChats() {
-      const res = await axios.get(`/async/recipients/{{recipient.id}}/chat`);
-      this.chats = res.data.data;
-    },
-    pollChats() {
-      this.polling = setInterval(() => {
-        this.getChats();
-      }, 5000)
-    },
-    async send(event) {
-      var inFlightMessage = this.message.trim()
-      if (inFlightMessage.length) {
-        this.message = '';
-        const res = await axios.post(`/async/recipients/{{recipient.id}}/chat`, {content: inFlightMessage})
-        this.chats = [res.data, ...this.chats];
+  const { createApp } = Vue
+  createApp({
+    delimiters: ['[[', ']]'],
+    data() {
+      return {
+        message: 'Hello Vue!',
+        polling: null,
+        chats: [],
+        currentUserId: {{request.user.id}},
+        message: '',
       }
     },
-  }
-});
+    created() {
+      this.getChats();
+  	  this.pollChats();
+    },
+    beforeDestroy () {
+  	  clearInterval(this.polling);
+    },
+    methods: {
+      async getChats() {
+        const res = await axios.get(`/async/recipients/{{recipient.id}}/chat`);
+        this.chats = res.data.data;
+      },
+      pollChats() {
+        this.polling = setInterval(() => {
+          this.getChats();
+        }, 5000)
+      },
+      async send(event) {
+        var inFlightMessage = this.message.trim()
+        if (inFlightMessage.length) {
+          this.message = '';
+          const res = await axios.post(`/async/recipients/{{recipient.id}}/chat`, {content: inFlightMessage})
+          this.chats = [res.data, ...this.chats];
+        }
+      },
+      displayDate: (value) => {
+        if (!value) return '';
+        var date = new Date(value);
+        var options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+        return new Intl.DateTimeFormat('en-US', options).format(date);
+      },
+    }
+  }).mount('#chat');
 </script>
