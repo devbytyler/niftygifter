@@ -72,13 +72,8 @@ class Idea(models.Model):
     likes = models.ManyToManyField(User, related_name="likes")
     created_at = models.DateTimeField(auto_now_add=True)
     notifications = GenericRelation(Notification)
-    # created_at = models.DateTimeField(auto_now_add=True)
-    
-    # price = models.FloatField(default=0.0)
-    # link = models.CharField(max_length=200, blank=True, default='')
-    # likers = models.ManyToManyField(User, related_name='likes')
-    # selected
-    # image
+    price = models.FloatField(default=0.0)
+    selected = models.BooleanField(default=False)
 
 class Chat(models.Model):
     content = models.CharField(max_length=500)

@@ -30,6 +30,7 @@ urlpatterns = [
     path('events/<int:event_id>/recipients/<int:recipient_id>/ideas/new', views.idea_add_edit, name='idea_new'),
     path('events/<int:event_id>/recipients/<int:recipient_id>/ideas/<int:pk>', views.idea, name='idea'),
     path('events/<int:event_id>/recipients/<int:recipient_id>/ideas/<int:pk>/edit', views.idea_add_edit, name='idea_edit'),
+    path('events/<int:event_id>/recipients/<int:recipient_id>/ideas/<int:pk>/select', views.idea_select, name='idea_select'),
     path('events/<int:event_id>/recipients/<int:recipient_id>/ideas/<int:pk>/delete', views.idea_delete, name='idea_delete'),
     path('events/<int:event_id>/recipients/<int:recipient_id>/ideas/<int:pk>/like', views.idea_like, name='idea_like'),
 

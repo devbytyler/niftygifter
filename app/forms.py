@@ -82,7 +82,7 @@ class EventForm(BaseForm, forms.ModelForm):
 class IdeaForm(BaseForm, forms.ModelForm):
     class Meta:
         model = Idea
-        fields = ['title', 'description']
+        fields = ['title', 'price', 'description', ]
 
 class NewRecipientForm(BaseForm, forms.ModelForm):
     class Meta: 
@@ -93,6 +93,6 @@ class NewRecipientForm(BaseForm, forms.ModelForm):
         event = kwargs.pop("event")
         super(NewRecipientForm, self).__init__(*args, **kwargs)
         self.fields["decider"].widget = forms.widgets.RadioSelect()
-        self.fields["decider"].queryset = event.members.all()
+        self.fields["decider"].queryset = User.objects.all()
         self.fields["blocked_users"].widget = forms.widgets.CheckboxSelectMultiple()
-        self.fields["blocked_users"].queryset = event.members.all()
+        self.fields["blocked_users"].queryset = User.objects.all()

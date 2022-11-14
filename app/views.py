@@ -1,6 +1,6 @@
 import json
 
-from django.http.response import Http404, HttpResponse, JsonResponse
+from django.http.response import Http404, HttpResponse, JsonResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.urls.base import reverse
@@ -80,8 +80,8 @@ def event(request, pk):
                     ideas__notifications__read=False,
                     ideas__notifications__user=request.user
                 ),
-            )
-        )
+            ),
+        ).annotate(selected=Count('ideas', filter=Q(ideas__selected=True)))
     context = {
         "event": event,
         "recipients": recipients
@@ -255,12 +255,22 @@ def idea_add_edit(request, event_id, recipient_id, pk=None):
     }
     return render(request, "app/idea_add_edit.html", context)
 
+@login_required
+def idea_select(request, event_id, recipient_id, pk):
+    recipient = get_object_or_404(Recipient, pk=recipient_id)
+    if (recipient.decider != request.user):
+        return HttpResponseForbidden()
+    idea = get_object_or_404(Idea, pk=pk)
+    idea.selected = not idea.selected
+    idea.save()
+    messages.success(request, "🎉 Success! Idea updated.")
+    return redirect("recipient_ideas", event_id, recipient_id)
 
 @login_required
 def idea_delete(request, event_id, recipient_id, pk):
     idea = get_object_or_404(Idea, pk=pk)
     idea.delete()
-    messages.success(request, "Success! Idea removed.")
+    messages.success(request, "🎉 Success! Idea removed.")
     return redirect("recipient_ideas", event_id, recipient_id)
 
 
