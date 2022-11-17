@@ -2,7 +2,8 @@ import json
 
 from django.http.response import Http404, HttpResponse, JsonResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 from django.urls.base import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -27,6 +28,23 @@ def home(request):
 def sign_out(request):
     logout(request)
     return redirect("home")
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('change_password')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'app/change_password.html', {
+        'form': form
+    })
 
 
 def sign_in(request):
