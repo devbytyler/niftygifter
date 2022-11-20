@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -20,10 +21,19 @@ class User(AbstractUser):
     is_superuser()
     is_authenticated()
     '''
-    pass
+    avatar_seed = models.UUIDField(null=True)
     @property
     def avatar(self):
-        return multiavatar(self.username, None, None)
+        return multiavatar(self.avatar_seed or self.username, None, None)
+
+    def regenerate_avatar(self):
+        self.avatar_seed = uuid.uuid4()
+        self.save()
+    
+    def reset_avatar(self):
+        self.avatar_seed = None
+        self.save()
+
 
 class Event(models.Model):
     title = models.CharField(max_length=100)
@@ -91,21 +101,12 @@ class Chat(models.Model):
             "user_avatar": self.user.avatar,
         }
 
-
-'''
-
 class Comment(models.Model):
-    text
-    user
-    idea
-    event? Meaning comments for the whole event, not specific to a certain idea
-    pass
+    user = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
+    idea = models.ForeignKey(Idea, related_name='comments', on_delete=models.CASCADE)
+    content = models.CharField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-class Notification(model):
-    read
-    entity
-    user
-'''
 
 '''
 [NO] Anybody in the group can create a gift for anybody else in the group.

@@ -44,6 +44,12 @@
                 <div>{{idea.description | urlizetrunc:63 | url_target_blank | linebreaks}}</div>
                 <div class="idea-actions d-flex justify-content-between text-muted">
                     <div>
+                        {% comment %} <a data-bs-toggle="collapse" href="#comments-{{idea.id}}" role="button" aria-expanded="false" aria-controls="comments-{{idea.id}}">
+                            <i class="bi bi-chat p-1"></i>
+                            {{idea.comments.count}}
+                        </a> {% endcomment %}
+                        
+
                         <a data-bs-toggle="tooltip" title="{% if request.user in idea.likes.all %}You like this{% else %}Like this idea{% endif %}" href="{% url 'idea_like' recipient.event_id recipient.id idea.id %}">
                             {% if request.user in idea.likes.all %}
                                 <i class="bi bi-hand-thumbs-up-fill p-1"></i>  
@@ -73,11 +79,50 @@
                         {% endif %}
                     </div>
                 </div>
+                <div class="collapse" id="comments-{{idea.id}}">
+                    <div class="form-label mt-3 text-muted small">Comments</div>
+                    <div class="border border-1 rounded p-3">
+                        {% for comment in idea.comments.all %}
+                        <div>{{comment.content}}</div>
+                        {% endfor %}
+                        <form method="post">
+                            <div class="input-group">
+                                <input
+                                    name="comment"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Enter a commment..."
+                                    aria-describedby="send-button-addon"
+                                />
+                                <button
+                                    class="btn btn-primary"
+                                    type="submit"
+                                    id="send-button-addon"
+                                >
+                                    <i class="bi bi-send me-1"></i>Send
+                                </button>
+                            </div>
+                            <input type="hidden" name="idea" value="{{idea.id}}" class="form-control"/>
+                           {% csrf_token %}
+                       </form> 
+                    </div>
+                </div>
             </div>
         </div>
         {% comment %} Suggester, likes, comments, select, created at  {% endcomment %}
     {% endfor %}
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) { 
+        var scrollpos = localStorage.getItem('scrollpos');
+        if (scrollpos) window.scrollTo(0, scrollpos);
+    });
+
+    window.onbeforeunload = function(e) {
+        localStorage.setItem('scrollpos', window.scrollY);
+    };
+</script>
 
 {% if not is_blocked %}
 {% include 'components/chat.html' %}

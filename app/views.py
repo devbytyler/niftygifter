@@ -11,7 +11,7 @@ from django.db.models import Q, Count
 
 from app import forms
 
-from app.models import Chat, Notification, User, Event, Recipient, Idea
+from app.models import Chat, Notification, User, Event, Recipient, Idea, Comment
 
 
 def home(request):
@@ -80,6 +80,17 @@ def register(request):
     }
     return render(request, "registration/register.html", context)
 
+@login_required
+def profile(request):
+    if request.method == "POST":
+        if request.POST.get("reset"):
+            print("resettting")
+            request.user.reset_avatar()
+        else:
+            print("UM hello")
+            request.user.regenerate_avatar()
+    return render(request, "app/profile.html", {})
+
 
 def event(request, pk):
     event = get_object_or_404(Event, pk=pk)
@@ -132,6 +143,12 @@ def recipients_add_edit(request, event_id, recipient_id=None):
 
 @login_required
 def recipient_ideas(request, event_id, recipient_id):
+    comment = request.POST.get("comment")
+    idea = request.POST.get("idea")
+    if comment and idea:
+        Comment.objects.create(content=comment, idea_id=idea, user=request.user)
+        return redirect(reverse('recipient_ideas', kwargs={'event_id':event_id, 'recipient_id': recipient_id}) + f"#{idea}")
+
     recipient = get_object_or_404(Recipient, pk=recipient_id)
     is_blocked = request.user in recipient.blocked_users.all()
     ideas = recipient.ideas.select_related("creator").order_by("-id")

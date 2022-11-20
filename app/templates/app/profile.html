@@ -1,0 +1,24 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+
+<div class="card mx-auto" style="max-width: 700px">
+    <div class="card-body">
+        <h5 class="card-title">Profile</h5>
+        <div class="d-flex flex-column gap-5 align-items-center mt-5">
+            <div class="me-2" style="width: 201px; height: 201px;">
+                {{request.user.avatar | safe}}
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Regenerate Avatar</button>
+            </form>
+        </div>
+        <form method="post" class="text-center">
+            {% csrf_token %}
+            <button type="submit" name="reset" value="true" class="btn btn-link text-muted">Reset</button>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}
