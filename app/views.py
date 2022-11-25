@@ -1,6 +1,11 @@
 import json
 
-from django.http.response import Http404, HttpResponse, JsonResponse, HttpResponseForbidden
+from django.http.response import (
+    Http404,
+    HttpResponse,
+    JsonResponse,
+    HttpResponseForbidden,
+)
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -29,22 +34,21 @@ def sign_out(request):
     logout(request)
     return redirect("home")
 
+
 @login_required
 def change_password(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)  # Important!
-            messages.success(request, 'Your password was successfully updated!')
-            return redirect('change_password')
+            messages.success(request, "Your password was successfully updated!")
+            return redirect("change_password")
         else:
-            messages.error(request, 'Please correct the error below.')
+            messages.error(request, "Please correct the error below.")
     else:
         form = PasswordChangeForm(request.user)
-    return render(request, 'app/change_password.html', {
-        'form': form
-    })
+    return render(request, "app/change_password.html", {"form": form})
 
 
 def sign_in(request):
@@ -80,6 +84,7 @@ def register(request):
     }
     return render(request, "registration/register.html", context)
 
+
 @login_required
 def profile(request):
     if request.method == "POST":
@@ -100,21 +105,18 @@ def event(request, pk):
     if request.POST.get("delete-contributor"):
         messages.success(request, "❌ Removed contributor.")
         event.members.remove(request.POST.get("delete-contributor"))
-    recipients = event.recipients.order_by('id')
+    recipients = event.recipients.order_by("id")
     if request.user.is_authenticated:
         recipients = event.recipients.annotate(
             notifications=Count(
                 "ideas__notifications",
                 filter=Q(
                     ideas__notifications__read=False,
-                    ideas__notifications__user=request.user
+                    ideas__notifications__user=request.user,
                 ),
             ),
-        ).annotate(selected=Count('ideas', filter=Q(ideas__selected=True)))
-    context = {
-        "event": event,
-        "recipients": recipients
-    }
+        ).annotate(selected=Count("ideas", filter=Q(ideas__selected=True)))
+    context = {"event": event, "recipients": recipients}
     return render(request, "app/event.html", context)
 
 
@@ -145,19 +147,27 @@ def recipients_add_edit(request, event_id, recipient_id=None):
 def recipient_ideas(request, event_id, recipient_id):
     comment = request.POST.get("comment")
     idea = request.POST.get("idea")
+    open_idea = None
     if comment and idea:
         Comment.objects.create(content=comment, idea_id=idea, user=request.user)
-        return redirect(reverse('recipient_ideas', kwargs={'event_id':event_id, 'recipient_id': recipient_id}) + f"#{idea}")
+        open_idea = int(idea)
 
     recipient = get_object_or_404(Recipient, pk=recipient_id)
     is_blocked = request.user in recipient.blocked_users.all()
     ideas = recipient.ideas.select_related("creator").order_by("-id")
     if is_blocked:
         ideas = ideas.filter(creator=request.user)
-    ideas_ids = ideas.values_list('id', flat=True)
-    Notification.objects.filter(content_type__model='idea', object_id__in=ideas_ids, user=request.user).update(read=True)
+    ideas_ids = ideas.values_list("id", flat=True)
+    Notification.objects.filter(
+        content_type__model="idea", object_id__in=ideas_ids, user=request.user
+    ).update(read=True)
 
-    context = {"recipient": recipient, "ideas": ideas, "is_blocked": is_blocked}
+    context = {
+        "recipient": recipient,
+        "ideas": ideas,
+        "is_blocked": is_blocked,
+        "open_idea": open_idea,
+    }
     return render(request, "app/recipient.html", context)
 
 
@@ -272,7 +282,9 @@ def idea_add_edit(request, event_id, recipient_id, pk=None):
                 new_idea.recipient_id = recipient_id
                 new_idea.save()
                 blocked_user_ids = recipient.blocked_users.values_list("id", flat=True)
-                for user in event.members.exclude(id=request.user.id).exclude(id__in=blocked_user_ids):
+                for user in event.members.exclude(id=request.user.id).exclude(
+                    id__in=blocked_user_ids
+                ):
                     Notification.objects.create(
                         user=user,
                         message="An idea was added",
@@ -290,16 +302,18 @@ def idea_add_edit(request, event_id, recipient_id, pk=None):
     }
     return render(request, "app/idea_add_edit.html", context)
 
+
 @login_required
 def idea_select(request, event_id, recipient_id, pk):
     recipient = get_object_or_404(Recipient, pk=recipient_id)
-    if (recipient.decider != request.user):
+    if recipient.decider != request.user:
         return HttpResponseForbidden()
     idea = get_object_or_404(Idea, pk=pk)
     idea.selected = not idea.selected
     idea.save()
     messages.success(request, "🎉 Success! Idea updated.")
     return redirect("recipient_ideas", event_id, recipient_id)
+
 
 @login_required
 def idea_delete(request, event_id, recipient_id, pk):

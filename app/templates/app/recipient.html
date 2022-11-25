@@ -44,10 +44,10 @@
                 <div>{{idea.description | urlizetrunc:63 | url_target_blank | linebreaks}}</div>
                 <div class="idea-actions d-flex justify-content-between text-muted">
                     <div>
-                        {% comment %} <a data-bs-toggle="collapse" href="#comments-{{idea.id}}" role="button" aria-expanded="false" aria-controls="comments-{{idea.id}}">
+                        <a data-bs-toggle="collapse" href="#comments-{{idea.id}}" role="button" aria-expanded="false" aria-controls="comments-{{idea.id}}">
                             <i class="bi bi-chat p-1"></i>
                             {{idea.comments.count}}
-                        </a> {% endcomment %}
+                        </a>
                         
 
                         <a data-bs-toggle="tooltip" title="{% if request.user in idea.likes.all %}You like this{% else %}Like this idea{% endif %}" href="{% url 'idea_like' recipient.event_id recipient.id idea.id %}">
@@ -67,7 +67,6 @@
                         </small>
                         {% endif %}
                             
-                        {% comment %} <i class="bi bi-chat p-1 ms-2"></i> {% endcomment %}
                     </div>
                     <div>
                         {% if idea.creator == request.user %}
@@ -79,14 +78,22 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="collapse" id="comments-{{idea.id}}">
+                <div class="collapse {% if open_idea == idea.id %}show{% endif %}" id="comments-{{idea.id}}">
                     <div class="form-label mt-3 text-muted small">Comments</div>
-                    <div class="border border-1 rounded p-3">
+                    <div>
                         {% for comment in idea.comments.all %}
-                        <div>{{comment.content}}</div>
+                        <div class="d-flex mb-3">
+                            <div class="me-2 flex-shrink-0" style="width: 30px; height: 30px;">
+                                {{comment.user.avatar | safe}}
+                            </div>
+                            <div>
+                                <div class="text-muted small">{{comment.user.get_full_name}} - {{comment.created_at | timesince | upto:','}} ago</div>
+                                <div>{{comment.content}}</div>
+                            </div>
+                        </div>
                         {% endfor %}
                         <form method="post">
-                            <div class="input-group">
+                            <div class="input-group mt-3">
                                 <input
                                     name="comment"
                                     type="text"
@@ -95,7 +102,7 @@
                                     aria-describedby="send-button-addon"
                                 />
                                 <button
-                                    class="btn btn-primary"
+                                    class="btn btn-outline-primary"
                                     type="submit"
                                     id="send-button-addon"
                                 >
@@ -116,7 +123,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", function(event) { 
         var scrollpos = localStorage.getItem('scrollpos');
-        if (scrollpos) window.scrollTo(0, scrollpos);
+        if (scrollpos) window.scrollTo({top: scrollpos, behavior: 'instant'});
     });
 
     window.onbeforeunload = function(e) {
