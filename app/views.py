@@ -12,7 +12,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.urls.base import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Sum, F
 
 from app import forms
 
@@ -114,6 +114,15 @@ def event(request, pk):
                     ideas__notifications__read=False,
                     ideas__notifications__user=request.user,
                 ),
+                distinct=True,
+            )
+            + Count(
+                "chats__notifications",
+                filter=Q(
+                    chats__notifications__read=False,
+                    chats__notifications__user=request.user,
+                ),
+                distinct=True,
             ),
         ).annotate(selected=Count("ideas", filter=Q(ideas__selected=True)))
     context = {"event": event, "recipients": recipients}
@@ -158,19 +167,31 @@ def recipient_ideas(request, event_id, recipient_id):
     if is_blocked:
         ideas = ideas.filter(creator=request.user)
     ideas_ids = ideas.values_list("id", flat=True)
-    notifications = Notification.objects.filter(
-        content_type__model="idea", object_id__in=ideas_ids, user=request.user, read=False
+    chat_ids = recipient.chats.values_list("id", flat=True)
+    all_notifications = Notification.objects.filter(
+        user=request.user,
+        read=False,
     )
-    new_ideas = list(notifications.values_list('object_id', flat=True))
-    print(new_ideas)
-    notifications.update(read=True)
+    new_ideas = all_notifications.filter(
+        content_type__model="idea",
+        object_id__in=ideas_ids,
+    )
+    new_chats = int(all_notifications.filter(
+        content_type__model="chat",
+        object_id__in=chat_ids,
+    ).count())
+
+    new_ideas_ids = list(new_ideas.values_list("object_id", flat=True))
+    
+    all_notifications.update(read=True)
 
     context = {
         "recipient": recipient,
         "ideas": ideas,
         "is_blocked": is_blocked,
         "open_idea": open_idea,
-        "new_ideas": new_ideas,
+        "new_ideas": new_ideas_ids,
+        "new_chats_count": new_chats,
     }
     return render(request, "app/recipient.html", context)
 
@@ -340,10 +361,19 @@ def idea_like(request, event_id, recipient_id, pk):
 def chat(request, pk):
     if request.method == "POST":
         body = json.loads(request.body)
-        print(body)
         c = Chat.objects.create(
             user=request.user, group_id=pk, content=body.get("content")
         )
+        recipient = get_object_or_404(Recipient, pk=pk)
+        blocked_user_ids = recipient.blocked_users.values_list("id", flat=True)
+        for user in recipient.event.members.exclude(id=request.user.id).exclude(
+            id__in=blocked_user_ids
+        ):
+            Notification.objects.create(
+                user=user,
+                message="A chat was sent",
+                content_object=c,
+            )
         return JsonResponse(c.serialize())
     if request.method == "GET":
         chats = Chat.objects.filter(group_id=pk).order_by("-id").select_related("user")

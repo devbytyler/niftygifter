@@ -9,8 +9,17 @@
 
     <div class="d-flex justify-content-between mb-2">
         <a href="{% url 'event' recipient.event_id %}"><i class="bi bi-arrow-left"></i> Back to event</a>
-        {% if not is_blocked %}
-        <button class="btn btn-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i class="bi bi-chat me-2"></i>Open Chat</button>
+        {% if not is_blocked%}
+        <button class="btn btn-secondary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+            <i class="bi bi-chat me-2"></i>
+            Open Chat
+            {% if new_chats_count %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{new_chats_count}}
+                    <span class="visually-hidden">unread messages</span>
+                </span>
+            {% endif %}
+        </button>
         {% endif %}
     </div>
 
@@ -35,10 +44,10 @@
                 {% endif %}
                 <div class="d-flex justify-content-between">
                     <div class="text-muted small mb-2">
-                        {% if idea.id in new_ideas %}
-                        <span class="badge rounded-pill text-bg-primary">New</span>
-                        {% endif %}
                         Added by {{idea.creator.get_full_name}} {{idea.created_at | timesince | upto:','}} ago
+                        {% if idea.id in new_ideas %}
+                        <span class="badge rounded-pill text-bg-danger">New</span>
+                        {% endif %}
                     </div>
                     <div class="text-muted small">${{idea.price | floatformat:2}}</div>
                     {% comment %} {% if recipient.decider == request.user %}

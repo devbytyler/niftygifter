@@ -63,19 +63,6 @@
   flex-direction: row-reverse;
 }
 
-/* .chat.me .message:before {
-  content: "";
-  width: 0px;
-  height: 0px;
-  position: absolute;
-  border-left: 8px solid var(--bs-primary);
-  border-right: 8px solid transparent;
-  border-top: 8px solid transparent;
-  border-bottom: 8px solid transparent;
-  right: -16px;
-  bottom: 9px;
-} */
-
 .chat.me .message {
   background-color: var(--bs-primary);
   color: white;

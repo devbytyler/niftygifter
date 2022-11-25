@@ -1,4 +1,10 @@
 <div class="card clickable recipient position-relative {% if recipient.selected %} border border-success border-4 border-opacity-50{% else %} border-0 {% endif %}">
+  {% if recipient.notifications and not request.user in recipient.blocked_users.all %}
+  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fs-6">
+    {{recipient.notifications}}
+    <span class="visually-hidden">unread messages</span>
+  </span>
+  {% endif %}
   <div class="card-body">
     <div class="d-flex justify-content-between">
         <div>
@@ -37,12 +43,6 @@
           {{recipient.ideas.count}}
         {% endif %}
       </span>
-      {% if recipient.notifications and not request.user in recipient.blocked_users.all %}
-      <span class="badge rounded-pill bg-primary ms-2">
-        {{recipient.notifications}} new
-        <span class="visually-hidden">unread notifications</span>
-      </span>
-      {% endif %}
     </div>
     <div class="d-flex align-items-center mt-3">
       {% if recipient.decider.avatar %}  

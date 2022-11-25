@@ -90,6 +90,7 @@ class Chat(models.Model):
     user = models.ForeignKey(User, related_name='chats', on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     group = models.ForeignKey(Recipient, related_name='chats', on_delete=models.CASCADE)
+    notifications = GenericRelation(Notification)
 
     def serialize(self):
         return {
