@@ -44,10 +44,12 @@
                 <div>{{idea.description | urlizetrunc:63 | url_target_blank | linebreaks}}</div>
                 <div class="idea-actions d-flex justify-content-between text-muted">
                     <div>
+                        {% if not is_blocked %}
                         <a data-bs-toggle="collapse" href="#comments-{{idea.id}}" role="button" aria-expanded="false" aria-controls="comments-{{idea.id}}">
                             <i class="bi bi-chat p-1"></i>
                             {{idea.comments.count}}
                         </a>
+                        {% endif %}
                         
 
                         <a data-bs-toggle="tooltip" title="{% if request.user in idea.likes.all %}You like this{% else %}Like this idea{% endif %}" href="{% url 'idea_like' recipient.event_id recipient.id idea.id %}">
@@ -78,6 +80,7 @@
                         {% endif %}
                     </div>
                 </div>
+                {% if not is_blocked %}
                 <div class="collapse {% if open_idea == idea.id %}show{% endif %}" id="comments-{{idea.id}}">
                     <div class="form-label mt-3 text-muted small">Comments</div>
                     <div>
@@ -114,6 +117,7 @@
                        </form> 
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
         {% comment %} Suggester, likes, comments, select, created at  {% endcomment %}
