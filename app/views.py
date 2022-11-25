@@ -176,14 +176,16 @@ def recipient_ideas(request, event_id, recipient_id):
         content_type__model="idea",
         object_id__in=ideas_ids,
     )
-    new_chats = int(all_notifications.filter(
+    new_chats = all_notifications.filter(
         content_type__model="chat",
         object_id__in=chat_ids,
-    ).count())
+    )
 
     new_ideas_ids = list(new_ideas.values_list("object_id", flat=True))
+    new_chats_count = int(new_chats.count())
     
-    all_notifications.update(read=True)
+    new_ideas.update(read=True)
+    new_chats.update(read=True)
 
     context = {
         "recipient": recipient,
@@ -191,7 +193,7 @@ def recipient_ideas(request, event_id, recipient_id):
         "is_blocked": is_blocked,
         "open_idea": open_idea,
         "new_ideas": new_ideas_ids,
-        "new_chats_count": new_chats,
+        "new_chats_count": new_chats_count,
     }
     return render(request, "app/recipient.html", context)
 
