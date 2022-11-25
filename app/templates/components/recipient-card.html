@@ -1,9 +1,11 @@
-<div class="card clickable recipient position-relative border-0">
+<div class="card clickable recipient position-relative {% if recipient.selected %} border border-success border-4 border-opacity-50{% else %} border-0 {% endif %}">
   <div class="card-body">
     <div class="d-flex justify-content-between">
         <div>
          {% if request.user in recipient.blocked_users.all %}
           <small class="text-danger"><i class="bi bi-eye-slash"></i> Restricted</small>
+        {% elif recipient.selected %}
+          <div class="text-success small"><i class="bi bi-check me-1"></i>Idea selected</div>
         {% else %}
           <br>
         {% endif %}
@@ -36,18 +38,10 @@
         {% endif %}
       </span>
       {% if recipient.notifications and not request.user in recipient.blocked_users.all %}
-      <span class="badge rounded-pill bg-danger ms-2">
+      <span class="badge rounded-pill bg-primary ms-2">
         {{recipient.notifications}} new
         <span class="visually-hidden">unread notifications</span>
       </span>
-      {% endif %}
-    </div>
-    <div>
-      <span class="text-muted">Idea selected:&nbsp;</span>
-      {% if request.user not in recipient.blocked_users.all %}
-      <span>{% if recipient.selected %}Yes!{% else %}Not yet{% endif %}</span>
-      {% else %}
-      ???
       {% endif %}
     </div>
     <div class="d-flex align-items-center mt-3">

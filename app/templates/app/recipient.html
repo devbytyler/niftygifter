@@ -34,7 +34,12 @@
                 <div class="text-success small mb-2"><i class="bi bi-check me-1"></i>This idea has been selected by {{recipient.decider.get_full_name}}</div>
                 {% endif %}
                 <div class="d-flex justify-content-between">
-                    <div class="text-muted small mb-2">Added by {{idea.creator.get_full_name}} {{idea.created_at | timesince | upto:','}} ago</div>
+                    <div class="text-muted small mb-2">
+                        {% if idea.id in new_ideas %}
+                        <span class="badge rounded-pill text-bg-primary">New</span>
+                        {% endif %}
+                        Added by {{idea.creator.get_full_name}} {{idea.created_at | timesince | upto:','}} ago
+                    </div>
                     <div class="text-muted small">${{idea.price | floatformat:2}}</div>
                     {% comment %} {% if recipient.decider == request.user %}
                     <button class="btn btn-sm btn-outline-success">Select</button>

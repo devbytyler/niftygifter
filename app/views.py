@@ -158,15 +158,19 @@ def recipient_ideas(request, event_id, recipient_id):
     if is_blocked:
         ideas = ideas.filter(creator=request.user)
     ideas_ids = ideas.values_list("id", flat=True)
-    Notification.objects.filter(
-        content_type__model="idea", object_id__in=ideas_ids, user=request.user
-    ).update(read=True)
+    notifications = Notification.objects.filter(
+        content_type__model="idea", object_id__in=ideas_ids, user=request.user, read=False
+    )
+    new_ideas = list(notifications.values_list('object_id', flat=True))
+    print(new_ideas)
+    notifications.update(read=True)
 
     context = {
         "recipient": recipient,
         "ideas": ideas,
         "is_blocked": is_blocked,
         "open_idea": open_idea,
+        "new_ideas": new_ideas,
     }
     return render(request, "app/recipient.html", context)
 
