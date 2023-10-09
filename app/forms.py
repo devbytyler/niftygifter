@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import authenticate
-from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.password_validation import validate_password
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -96,3 +96,9 @@ class NewRecipientForm(BaseForm, forms.ModelForm):
         self.fields["decider"].queryset = User.objects.all()
         self.fields["blocked_users"].widget = forms.widgets.CheckboxSelectMultiple()
         self.fields["blocked_users"].queryset = User.objects.all()
+
+class CustomResetPasswordForm(BaseForm, PasswordResetForm):
+    pass
+
+class CustomSetPasswordForm(BaseForm, SetPasswordForm):
+    pass

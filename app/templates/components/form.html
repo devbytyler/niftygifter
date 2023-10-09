@@ -1,0 +1,26 @@
+<form method="post">
+    {% csrf_token %}
+    <fieldset class="mb-3">
+        {% for field in form %}
+            {% if field.errors %}
+                <div class="control-group error">
+                    <label class="form-label">{{ field.label }}</label> 
+                    {{ field }}
+                    <span class="form-text">
+                        {% for error in  field.errors %}{{ error }}{% endfor %}
+                    </span>
+                </div>
+            {% else %}
+                    <label class="form-label">{{ field.label }}</label> 
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="form-text"><small>{{ field.help_text }}</small></p>
+                    {% endif %}
+            {% endif %}
+        {% endfor %}
+    </fieldset>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
