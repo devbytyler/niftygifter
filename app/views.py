@@ -26,6 +26,7 @@ def home(request):
         events = Event.objects.all()
     context = {
         "events": events,
+        "message": "Hello world!"
     }
     return render(request, "app/home.html", context)
 
