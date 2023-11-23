@@ -7,11 +7,9 @@
     <a href="{% url 'event_new' %}" class="btn btn-link">+ Create New Event</a>
 </div>
 
-
-{% if request.user.memberships.all %}
-<h4>Joined Events</h4>
+{% if my_events %}<h4 class="mb-3">Joined Events</h4>{% else %}<h4>No Events</h4>{% endif %}
 <div class="row gy-4 mb-5">
-    {% for event in request.user.memberships.all %}
+    {% for event in my_events %}
     <div class="col-12 col-sm-6 col-md-4">
         <a href="{% url 'event' event.id %}">
             <div class="card clickable border-0">
@@ -24,21 +22,24 @@
         </a>
     </div>
     {% endfor %}
+    {% if past_events %}
+    <a href="{% url 'events_past' %}" class="btn-link d-block">View past events →</a>
+    {% endif %}
 </div>
-{% endif %}
-    
 
-{% if events %}
-<h4>Other Events</h4>
+
+{% if True %}
+<h4 class="mb-3">Other Events</h4>
 <div class="row gy-4">
-    {% for event in events %}
+    {% for event in my_events %}
     <div class="col-12 col-sm-6 col-md-4">
         <a href="{% url 'event' event.id %}">
             <div class="card clickable border-0">
                 <div class="card-body">
                     <h5 class="card-title">{{event.title}}</h5>
                     <h6 class="card-subtitle mb-2 text-muted">{{event.exchange_date}}</h6>
-                    {% if request.user.is_authenticated %}<a class="btn btn-primary btn-sm w-100" href="{% url 'event_membership' event.id %}">Join</a>{% endif %}
+                    {% if request.user.is_authenticated %}<a class="btn btn-primary btn-sm w-100"
+                        href="{% url 'event_membership' event.id %}">Join</a>{% endif %}
                 </div>
             </div>
         </a>

@@ -20,6 +20,7 @@ urlpatterns = [
     path('accounts/reset-password/complete', PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     # Events
+    path('events/past', views.past_events, name='events_past'),
     path('events/new', views.event_add_edit, name='event_new'),
     path('events/<int:pk>', views.event, name='event'),
     path('events/<int:pk>/edit', views.event_add_edit, name='event_edit'),

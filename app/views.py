@@ -12,23 +12,29 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.urls.base import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Count, Sum, F
+from django.db.models import Q, Count
+from datetime import date, datetime
 
 from app import forms
 
 from app.models import Chat, Notification, User, Event, Recipient, Idea, Comment
 
-
+@login_required
 def home(request):
-    if request.user.is_authenticated:
-        events = Event.objects.exclude(members__id=request.user.id)
-    else:
-        events = Event.objects.all()
+    current_events = Event.objects.filter(exchange_date__gte=datetime.now())
     context = {
-        "events": events,
-        "message": "Hello world!"
+        "my_events": current_events.filter(members__id=request.user.id),
+        "other_events": current_events.exclude(members__id=request.user.id),
+        "past_events": Event.objects.filter(exchange_date__lt=datetime.now()),
     }
     return render(request, "app/home.html", context)
+
+@login_required
+def past_events(request):
+    context = { 
+        "past_events": Event.objects.filter(exchange_date__lt=datetime.now(), members__id=request.user.id),
+    }
+    return render(request, "app/past.html", context)
 
 
 def sign_out(request):

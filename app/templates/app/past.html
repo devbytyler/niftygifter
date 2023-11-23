@@ -1,0 +1,23 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+
+<h4 class="mb-3 mt-5">My Past Events</h4>
+<div class="row gy-4 mb-5">
+    {% for event in past_events %}
+    <div class="col-12 col-sm-6 col-md-4">
+        <a href="{% url 'event' event.id %}">
+            <div class="card clickable border-0">
+                <div class="card-body">
+                    <h5 class="card-title">{{event.title}}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{event.exchange_date}}</h6>
+                    {% comment %} <a href="{% url 'event_membership' event.id %}">Join</a> {% endcomment %}
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock content %}
