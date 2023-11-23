@@ -37,9 +37,9 @@
     </a>
 
     {% for idea in ideas %}
-        <div class="card my-3 {% if idea.selected %} border border-success border-4 border-opacity-50{% else %} border-0 {% endif %} shadow-success">
+        <div class="card my-3 {% if idea.selected and request.user not in recipient.blocked_users.all %} border border-success border-4 border-opacity-50{% else %} border-0 {% endif %} shadow-success">
             <div class="card-body">
-                {% if idea.selected %}
+                {% if idea.selected and request.user not in recipient.blocked_users.all %}
                 <div class="text-success small mb-2"><i class="bi bi-check me-1"></i>This idea has been selected by {{recipient.decider.get_full_name}}</div>
                 {% endif %}
                 <div class="d-flex justify-content-between">
